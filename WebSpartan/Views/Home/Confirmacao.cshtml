@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Confirmação de Pedido";
+}
+
+<div class="text-center mt-5">
+    <div class="alert alert-success" role="alert">
+        <h2 class="text-success">🎉 Pedido realizado com sucesso!</h2>
+    </div>
+
+    <p class="mt-4">
+        Olá, <strong>@ViewBag.ClienteNome</strong>! Agradecemos sinceramente por escolher a nossa loja.
+    </p>
+
+    <p class="mt-2">
+        Seu pedido foi recebido com sucesso e já está em processo de separação, com toda a atenção e cuidado que você merece.
+    </p>
+
+    <p class="mt-2">
+        Em breve, entraremos em contato via WhatsApp para mantê-lo informado sobre os próximos passos e garantir uma entrega tranquila e eficiente.
+    </p>
+
+    <p class="mt-2">
+        Enquanto isso, sinta-se à vontade para continuar explorando nossos produtos ou entrar em contato conosco caso tenha qualquer dúvida.
+    </p>
+
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-4">🔙 Voltar à página inicial</a>
+</div>

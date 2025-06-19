@@ -27,8 +27,7 @@ namespace WebSpartan.Models
         [Required(ErrorMessage = "Bairro é obrigatório")]
         public string Bairro { get; set; }
 
-        [Required(ErrorMessage = "Complemento é obrigatório")]
-        public string Complemento { get; set; }
+        public string? Complemento { get; set; }
 
         [Required(ErrorMessage = "Cidade é obrigatória")]
         public string Cidade { get; set; }
