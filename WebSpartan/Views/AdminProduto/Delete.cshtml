@@ -1,0 +1,57 @@
+﻿@model WebSpartan.Models.Produto
+
+@{
+    ViewData["Title"] = "Excluir Produto";
+}
+
+<h1 class="mb-4">Excluir Produto</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>
+                Tem certeza que deseja excluir o produto <strong>@Model.Nome</strong>?
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.ImagemUrl))
+                {
+                    <img src="@Model.ImagemUrl" alt="@Model.Nome" class="img-fluid rounded border" style="max-height: 200px;" />
+                }
+                else
+                {
+                    <div class="bg-light text-muted d-flex align-items-center justify-content-center rounded" style="height: 200px;">
+                        Sem imagem
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-3">Nome:</dt>
+                    <dd class="col-sm-9">@Model.Nome</dd>
+
+                    <dt class="col-sm-3">Descrição:</dt>
+                    <dd class="col-sm-9 text-muted">
+                        @(Model.Descricao?.Length > 100 ? Model.Descricao.Substring(0, 100) + "…" : Model.Descricao)
+                    </dd>
+
+                    <dt class="col-sm-3">Preço:</dt>
+                    <dd class="col-sm-9 text-success fw-bold">R$ @Model.Preco.ToString("F2")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="d-flex flex-wrap gap-2">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash-fill me-1"></i> Confirmar Exclusão
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>

@@ -6,4 +6,37 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Views\Home1\**" />
+    <Compile Remove="wwwroot\imagens\NovaPasta\**" />
+    <Content Remove="Views\Home1\**" />
+    <Content Remove="wwwroot\imagens\NovaPasta\**" />
+    <EmbeddedResource Remove="Views\Home1\**" />
+    <EmbeddedResource Remove="wwwroot\imagens\NovaPasta\**" />
+    <None Remove="Views\Home1\**" />
+    <None Remove="wwwroot\imagens\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\ConfiguracaoController.cs" />
+    <Compile Remove="Controllers\HomeController1.cs" />
+    <Compile Remove="Views\Home\Deletar.cshtml.cs" />
+    <Compile Remove="Views\Home\Editar.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Home\Criar - Cópia.cshtml" />
+    <Content Remove="wwwroot\imagens\d8a9a65a-2ba8-49a4-bd79-7481eda26147.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
 </Project>

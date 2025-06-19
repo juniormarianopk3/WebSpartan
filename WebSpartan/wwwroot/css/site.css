@@ -20,3 +20,55 @@ html {
 body {
   margin-bottom: 60px;
 }
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1; /* Isso faz com que o conteúdo principal ocupe o espaço disponível */
+}
+
+footer {
+    background-color: #343a40; /* Exemplo de cor de fundo */
+    color: white;
+    padding: 20px 0; /* Espaçamento dentro do footer */
+    text-align: center;
+    width: 100%;
+}
+a.btn.btn-outline-dark {
+    color: #212529; /* cor padrão de texto dos botões outline-dark */
+}
+
+    a.btn.btn-outline-dark:hover {
+        color: #fff; /* cor invertida no hover */
+        background-color: #212529;
+        border-color: #212529;
+    }
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #25d366;
+    color: white;
+    border-radius: 50%;
+    padding: 14px 16px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    text-decoration: none;
+    color: white;
+}
+
+.whatsapp-float i {
+    font-size: 1.8rem;
+}

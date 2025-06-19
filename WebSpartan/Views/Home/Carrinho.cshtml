@@ -1,0 +1,294 @@
+﻿@model WebSpartan.Models.ViewModels.CarrinhoViewModel
+
+@{
+    ViewData["Title"] = "Finalizar Pedido";
+    decimal total = Model.Itens.Sum(i => i.Produto.Preco * i.Quantidade);
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="FinalizarPedido" asp-controller="Carrinho" method="post" id="formPedido" novalidate>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cliente.Nome" class="form-label"></label>
+            <input asp-for="Cliente.Nome" class="form-control" id="nome" />
+            <span asp-validation-for="Cliente.Nome" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cliente.CPF" class="form-label"></label>
+            <input asp-for="Cliente.CPF" class="form-control" id="cpf" style="max-width:150px;" />
+            <span asp-validation-for="Cliente.CPF" class="invalid-feedback d-block"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cliente.Celular" class="form-label"></label>
+            <input asp-for="Cliente.Celular" class="form-control" id="celular" />
+            <span asp-validation-for="Cliente.Celular" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cliente.CEP" class="form-label"></label>
+            <input asp-for="Cliente.CEP" class="form-control" id="cep" />
+            <span asp-validation-for="Cliente.CEP" class="invalid-feedback d-block"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cliente.Rua" class="form-label"></label>
+            <input asp-for="Cliente.Rua" class="form-control" id="rua" />
+            <span asp-validation-for="Cliente.Rua" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-2 mb-3">
+            <label asp-for="Cliente.Numero" class="form-label"></label>
+            <input asp-for="Cliente.Numero" class="form-control" id="numero" />
+            <span asp-validation-for="Cliente.Numero" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-4 mb-3 d-flex align-items-end">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="temComplemento" />
+                <label class="form-check-label" for="temComplemento">Possuo complemento no endereço</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Cliente.Complemento" class="form-label"></label>
+        <input asp-for="Cliente.Complemento" class="form-control" id="complemento" disabled />
+        <span asp-validation-for="Cliente.Complemento" class="invalid-feedback d-block"></span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Cliente.Bairro" class="form-label"></label>
+            <input asp-for="Cliente.Bairro" class="form-control" id="bairro" />
+            <span asp-validation-for="Cliente.Bairro" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-5 mb-3">
+            <label asp-for="Cliente.Cidade" class="form-label"></label>
+            <input asp-for="Cliente.Cidade" class="form-control" id="cidade" />
+            <span asp-validation-for="Cliente.Cidade" class="invalid-feedback d-block"></span>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="Cliente.Estado" class="form-label"></label>
+            <select asp-for="Cliente.Estado" class="form-select" id="estado">
+                <option value="">Selecione o Estado</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+            </select>
+            <span asp-validation-for="Cliente.Estado" class="invalid-feedback d-block"></span>
+        </div>
+    </div>
+
+    <hr />
+
+    <h4>Resumo do pedido</h4>
+    <ul class="list-group mb-3">
+        @foreach (var item in Model.Itens)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                @item.Produto.Nome - @item.Quantidade unidade(s)
+                <span>R$ @((item.Produto.Preco * item.Quantidade).ToString("N2"))</span>
+                <form asp-action="RemoverDoCarrinho" asp-controller="Produto" method="post" class="d-inline">
+                    <input type="hidden" name="produtoId" value="@item.Produto.Id" />
+                    <button type="submit" class="btn btn-sm btn-danger" title="Remover">
+                        <i class="bi bi-trash"></i> Remover
+                    </button>
+                </form>
+            </li>
+        }
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Valor total:</strong>
+            <span>R$ @total.ToString("N2")</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Frete:</strong>
+            <span id="valorFrete">R$ 0,00</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Total com frete:</strong>
+            <span id="totalComFrete">R$ @total.ToString("N2")</span>
+        </li>
+        <li class="list-group-item">
+            <div class="mb-2">
+                <strong>Método de Pagamento:</strong>
+            </div>
+            <div class="btn-group d-flex gap-2" role="group" aria-label="Método de pagamento">
+                <input type="radio" class="btn-check" name="metodoPagamento" id="pix" value="Pix" required>
+                <label class="btn btn-outline-success btn-sm rounded-pill me-2" for="pix">PIX</label>
+
+                <input type="radio" class="btn-check" name="metodoPagamento" id="cartao" value="Cartão de Crédito">
+                <label class="btn btn-outline-primary btn-sm rounded-pill" for="cartao">Cartão</label>
+            </div>
+            <span asp-validation-for="metodoPagamento" class="invalid-feedback d-block mt-2"></span>
+        </li>
+
+
+
+    </ul>
+
+
+    <button type="button" class="btn btn-success" onclick="enviarPedido()" 
+    @(Model.Itens.Count == 0 ? "disabled" : "")>
+    <i class="fab fa-whatsapp"></i> Enviar via WhatsApp
+</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- ícones -->
+
+    <script>
+
+
+        $(document).ready(function () {
+            // Máscaras
+            $('#cpf').mask('000.000.000-00');
+            $('#celular').mask('(00) 00000-0000');
+            $('#cep').mask('00000-000');
+
+            // Variável total do carrinho para JS
+            var totalCarrinho = parseFloat('@total.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)');
+
+            // Atualizar frete e total com frete
+            function atualizarFreteETotal() {
+                let estado = $('#estado').val();
+                let frete = 0;
+
+                if (estado === "RJ") frete = 25.00;
+                else if (estado !== "") frete = 40.00;
+
+                let totalComFrete = totalCarrinho + frete;
+
+                $("#valorFrete").text("R$ " + frete.toFixed(2).replace('.', ','));
+                $("#totalComFrete").text("R$ " + totalComFrete.toFixed(2).replace('.', ','));
+            }
+
+            $('#estado').on('change', atualizarFreteETotal);
+            atualizarFreteETotal();
+
+            // Busca CEP para preencher endereço
+            $('#cep').on('blur', function () {
+                var cep = $(this).val().replace(/\D/g, '');
+                if (cep.length === 8) {
+                    $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function (data) {
+                        if (!data.erro) {
+                            $('#rua').val(data.logradouro);
+                            $('#bairro').val(data.bairro);
+                            $('#cidade').val(data.localidade);
+                            $('#estado').val(data.uf);
+                            atualizarFreteETotal();
+                        } else {
+                            alert('CEP não encontrado.');
+                        }
+                    }).fail(function () {
+                        alert('Erro ao consultar o CEP.');
+                    });
+                }
+            });
+
+            // Controle do complemento
+            $('#temComplemento').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#complemento').prop('disabled', false);
+                    $('#complemento').rules('add', {
+                        required: true,
+                        messages: {
+                            required: "O complemento é obrigatório quando marcado."
+                        }
+                    });
+                } else {
+                    $('#complemento').prop('disabled', true).val('');
+                    $('#complemento').rules('remove', 'required');
+                    $('#complemento').next('span.invalid-feedback').text('');
+                }
+            });
+
+            // Trigger para ativar estado inicial do complemento
+            $('#temComplemento').trigger('change');
+        });
+
+        function enviarPedido() {
+
+            if (@Model.Itens.Count == 0) {
+                alert("Seu carrinho está vazio. Adicione produtos antes de enviar o pedido.");
+                return;
+            }
+            if (!$("#formPedido").valid()) {
+                alert("Por favor, corrija os erros do formulário.");
+                return;
+            }
+
+            const nome = $('#nome').val();
+            const cpf = $('#cpf').val();
+            const celular = $('#celular').val();
+            const cep = $('#cep').val();
+            const rua = $('#rua').val();
+            const numero = $('#numero').val();
+            const complemento = $('#complemento').val() || "Sem complemento";
+            const bairro = $('#bairro').val();
+            const cidade = $('#cidade').val();
+            const estado = $('#estado').val();
+            const metodoPagamento = $('input[name="metodoPagamento"]:checked').val();
+            if (!metodoPagamento) {
+                alert("Por favor, selecione o método de pagamento.");
+                return;
+            }
+
+            let frete = 0;
+            if (estado === "RJ") frete = 25.00;
+            else if (estado !== "") frete = 40.00;
+
+            let totalFinal = parseFloat('@total.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)') + frete;
+
+            let texto = `*FORMULÁRIO DE ENVIO*\n\n`;
+            texto += `*NOME:* ${nome}\n`;
+            texto += `*CPF:* ${cpf}\n`;
+            texto += `*CELULAR:* ${celular}\n`;
+            texto += `*CEP:* ${cep}\n`;
+            texto += `*ENDEREÇO:* ${rua}, ${numero} - ${bairro} - ${cidade}/${estado}\n`;
+            texto += `*COMPLEMENTO:* ${complemento}\n\n`;
+
+        @foreach (var item in Model.Itens)
+        {
+            <text>texto += "*PEDIDO:* @item.Produto.Nome - @item.Quantidade unidade(s)\n\n";</text>
+        }
+
+                texto += `*VALOR:* R$ @total.ToString("N2")\n`;
+            texto += `*FRETE:* R$ ${frete.toFixed(2).replace('.', ',')}\n`;
+            texto += `*TOTAL COM FRETE:* R$ ${totalFinal.toFixed(2).replace('.', ',')}\n`;
+            texto += `*FORMA DE PAGAMENTO:* ${metodoPagamento}\n\n`;
+
+            const numeroWpp = '@ViewBag.WhatsAppNum';
+const url = "https://wa.me/" + numeroWpp + "?text=" + encodeURIComponent(texto);
+            window.open(url, "_blank");
+        }
+    </script>
+}

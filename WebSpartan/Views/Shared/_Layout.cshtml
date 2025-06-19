@@ -3,47 +3,96 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebSpartan</title>
+    <title>Spartan Shop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebSpartan.styles.css" asp-append-version="true" />
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebSpartan</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">       
+        <div class="container px-4 px-lg-5">    
+            <a class="navbar-brand text-lg-center fs-2 fw-bold" href="~/Home/Index">Spartan AES</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="~/Home/Index">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="~/Contato/Index">Contato</a></li>
+
+                </ul>
+
+                <ul class="navbar-nav">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a asp-controller="Conta" asp-action="Index" class="nav-link text-black-50 me-2">
+                                <i class="bi bi-speedometer2"></i> Painel
+                            </a>
+                          
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <form asp-controller="Conta" asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-light btn-sm text-black-50">
+                                    <i class="bi bi-box-arrow-right"></i> Sair
+                                </button>
+                            </form>
                         </li>
-                    </ul>
-                </div>
+                    }
+                   
+                </ul>
+                <form class="d-flex">
+                    <a href="@Url.Action("Carrinho", "Home")" class="btn btn-outline-dark">
+                        <i class="bi bi-cart-fill me-1"></i>
+                        Carrinho
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">
+                            @(ViewBag.TotalItensCarrinho ?? 0)
+                        </span>
+                    </a>
+                </form>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">            
+            <div class="text-center text-white">
+                <div class="d-flex justify-content-center my-4">
+                    <img src="~/imagens/bg/bg.jpeg" class="rounded-circle img-fluid shadow" alt="Imagem de exemplo" style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+                <h1 class="display-4 fw-bolder">Spartan Shopping</h1>
+                <p class="lead fw-normal text-white-50 mb-0">Faça seus pedidos e termine a compra pelo Whatsapp.</p>
+                <i class="bi bi-whatsapp"></i>
+
+            </div>
+        </div>
+
+       
+    </header><br />
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - WebSpartan - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+  
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <a href="https://wa.me/@ViewBag.WhatsAppNum"
+       class="whatsapp-float"
+       target="_blank"
+       aria-label="Fale conosco pelo WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
     @await RenderSectionAsync("Scripts", required: false)
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Spartan AES 2025</p></div>
+    </footer>
+
+    
 </body>
+
 </html>

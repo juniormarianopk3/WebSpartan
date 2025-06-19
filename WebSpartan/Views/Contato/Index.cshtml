@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Contatos";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<p>Fique à vontade para nos seguir e entrar em contato pelas nossas redes sociais:</p>
+
+<div class="d-flex flex-wrap gap-3">
+
+    <a href="https://www.facebook.com/profile.php?id=61560717657933" target="_blank" rel="noopener noreferrer"
+       class="btn btn-primary d-flex align-items-center gap-2 px-4 py-3" style="min-width: 180px;">
+        <i class="bi bi-facebook fs-3"></i> Facebook
+    </a>
+
+    <a href="https://www.instagram.com/spartanaes" target="_blank" rel="noopener noreferrer"
+       class="btn btn-danger d-flex align-items-center gap-2 px-4 py-3" style="min-width: 180px;">
+        <i class="bi bi-instagram fs-3"></i> Instagram
+    </a>
+
+    @{
+        var whatsappUrl = "https://wa.me/" + ViewBag.WhatsAppNum + "?text=Ol%C3%A1%2C%20Estou%20entrando%20em%20contato%20por%20que%20gostaria%20de%20saber%20mais%20sobre%20os%20produtos%20e%20condi%C3%A7%C3%B5es.";
+    }
+
+    <a href="@whatsappUrl" target="_blank" rel="noopener noreferrer"
+       class="btn btn-success d-flex align-items-center gap-2 px-4 py-3" style="min-width: 180px;">
+        <i class="bi bi-whatsapp fs-3"></i> WhatsApp
+    </a>
+
+</div>
