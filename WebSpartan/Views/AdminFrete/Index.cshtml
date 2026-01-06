@@ -1,0 +1,56 @@
+﻿@model List<WebSpartan.Models.FreteEstado>
+
+@{
+    ViewData["Title"] = "Fretes por Estado";
+}
+
+<div class="container py-4">
+    <h2 class="mb-3">Frete por Estado (UF)</h2>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success">@TempData["Msg"]</div>
+    }
+
+    <a asp-action="Criar" class="btn btn-primary mb-3">
+        <i class="bi bi-plus-circle"></i> Novo Frete
+    </a>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted">Nenhum frete configurado ainda.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Estado (UF)</th>
+                    <th>Valor</th>
+                    <th style="width:150px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td>@f.Estado</td>
+                        <td>@f.Valor.ToString("C")</td>
+                        <td>
+                            <a asp-action="Editar" asp-route-id="@f.Id" class="btn btn-sm btn-outline-secondary">
+                                Editar
+                            </a>
+                            <form asp-action="Excluir" asp-route-id="@f.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Deseja realmente excluir este frete?');">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

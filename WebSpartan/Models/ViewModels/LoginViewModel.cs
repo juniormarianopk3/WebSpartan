@@ -4,17 +4,13 @@ namespace WebSpartan.Models.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Informe o usuário.")]
-        [Display(Name = "Usuário")]
-        public string Username { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; }
 
-        [Required(ErrorMessage = "Informe a senha.")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Senha")]
-        public string Password { get; set; }
+        [Required, DataType(DataType.Password)]
+        public string Senha { get; set; }
 
-        [Display(Name = "Lembrar-me")]
+        [Display(Name = "Manter conectado?")]
         public bool LembrarMe { get; set; }
     }
 }
-

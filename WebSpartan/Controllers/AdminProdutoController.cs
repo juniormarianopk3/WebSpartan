@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -30,20 +31,40 @@ namespace WebSpartan.Controllers
         [HttpGet]
         public IActionResult Criar()
         {
-            return View();
+            var vm = new ProdutoViewModel
+            {
+                CashbackPercentual = 5 // default = 5%
+            };
+
+            vm.CashbackOpcoes = Enumerable.Range(1, 6)
+                .Select(i => new SelectListItem
+                {
+                    Text = $"{i * 5}%",
+                    Value = (i * 5).ToString(),
+                    Selected = (i * 5) == vm.CashbackPercentual
+                })
+                .ToList();
+
+            return View(vm);
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Criar(ProdutoViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                foreach (var erro in ModelState)
-                {
-                    Console.WriteLine($"{erro.Key}: {string.Join(", ", erro.Value.Errors.Select(e => e.ErrorMessage))}");
-                }
+                model.CashbackOpcoes = Enumerable.Range(1, 6)
+                    .Select(i => new SelectListItem
+                    {
+                        Text = $"{i * 5}%",
+                        Value = (i * 5).ToString(),
+                        Selected = (i * 5) == model.CashbackPercentual
+                    })
+                    .ToList();
 
-                return View(model); // Retorna à View mostrando os erros
+                return View(model);
             }
             string caminhoImagem = "";
 
@@ -64,13 +85,15 @@ namespace WebSpartan.Controllers
 
                 caminhoImagem = "/imagens/" + nomeArquivo;
             }
-
+            var cashbackDecimal = model.CashbackPercentual / 100m;
             var produto = new Produto
             {
                 Nome = model.Nome,
                 Descricao = model.Descricao,
+                DescricaoCompleta = model.DescricaoCompleta,
                 Preco = model.Preco,
-                ImagemUrl = caminhoImagem
+                ImagemUrl = caminhoImagem,
+                CashbackPercentual = cashbackDecimal
             };
 
             _context.Produtos.Add(produto);
@@ -85,26 +108,45 @@ namespace WebSpartan.Controllers
             var produto = await _context.Produtos.FindAsync(id);
             if (produto == null) return NotFound();
 
-            var model = new ProdutoViewModel
+            var vm = new ProdutoViewModel
             {
                 Id = produto.Id,
                 Nome = produto.Nome,
                 Descricao = produto.Descricao,
+                DescricaoCompleta = produto.DescricaoCompleta,
                 Preco = produto.Preco,
-                ImagemAtual = produto.ImagemUrl
+                ImagemAtual = produto.ImagemUrl,
+
+                // 🔹 Converte 0.10 → 10, 0.05 → 5 etc.
+                CashbackPercentual = (int)(produto.CashbackPercentual * 100m)
             };
 
-            return View(model);
+            vm.CashbackOpcoes = Enumerable.Range(1, 6)
+                .Select(i => new SelectListItem
+                {
+                    Text = $"{i * 5}%",
+                    Value = (i * 5).ToString(),
+                    Selected = (i * 5) == vm.CashbackPercentual
+                })
+                .ToList();
+
+            return View(vm);
         }
+
         [HttpPost]
         public async Task<IActionResult> Editar(ProdutoViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                foreach (var erro in ModelState)
-                {
-                    Console.WriteLine($"{erro.Key}: {string.Join(", ", erro.Value.Errors.Select(e => e.ErrorMessage))}");
-                }
+                model.CashbackOpcoes = Enumerable.Range(1, 6)
+                    .Select(i => new SelectListItem
+                    {
+                        Text = $"{i * 5}%",
+                        Value = (i * 5).ToString(),
+                        Selected = (i * 5) == model.CashbackPercentual
+                    })
+                    .ToList();
+
                 return View(model);
             }
 
@@ -113,7 +155,11 @@ namespace WebSpartan.Controllers
 
             produto.Nome = model.Nome;
             produto.Descricao = model.Descricao;
+            produto.DescricaoCompleta = model.DescricaoCompleta;
+
             produto.Preco = model.Preco;
+            produto.CashbackPercentual = model.CashbackPercentual/ 100m;
+
             if (model.ImagemUrl != null && model.ImagemUrl.Length > 0)
             {
                 // Apaga a imagem antiga se quiser (opcional)

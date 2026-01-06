@@ -1,0 +1,48 @@
+﻿@model WebSpartan.Models.UserAddress
+@{
+    ViewData["Title"] = "Cadastrar Endereço";
+}
+
+<div class="container mt-4" style="max-width:600px;">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    <form asp-action="@(ViewContext.RouteData.Values["action"])" method="post">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label>CEP</label>
+            <input asp-for="Cep" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Rua</label>
+            <input asp-for="Rua" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Número</label>
+            <input asp-for="Numero" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Bairro</label>
+            <input asp-for="Bairro" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Cidade</label>
+            <input asp-for="Cidade" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Estado</label>
+            <input asp-for="Estado" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Complemento</label>
+            <input asp-for="Complemento" class="form-control" />
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="Principal" class="form-check-input" />
+            <label class="form-check-label">Endereço principal</label>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Salvar</button>
+    </form>
+</div>

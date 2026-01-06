@@ -1,0 +1,39 @@
+﻿@model WebSpartan.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5" style="max-width:450px;">
+    <h2 class="text-center mb-4">Entrar</h2>
+
+    <form asp-action="Login" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mb-3">
+            <label>E-mail</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Senha</label>
+            <input asp-for="Senha" type="password" class="form-control" />
+            <span asp-validation-for="Senha" class="text-danger"></span>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="LembrarMe" class="form-check-input" />
+            <label asp-for="LembrarMe" class="form-check-label">Manter conectado</label>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Entrar</button>
+    </form>
+
+    <div class="text-center mt-3">
+        Não tem conta? <a asp-action="Registrar" class="text-decoration-none">Criar conta</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

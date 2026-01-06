@@ -1,0 +1,81 @@
+﻿@model WebSpartan.Models.Pedido
+
+@{
+    ViewData["Title"] = "Confirmação de Pagamento";
+    var statusParam = (string)ViewBag.StatusParam ?? Model.Status;
+    var total = Model.Subtotal + Model.Frete - Model.Desconto;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    @{
+                        string titulo;
+                        string mensagem;
+                        string iconClass;
+                        string badgeClass;
+
+                        switch (statusParam)
+                        {
+                            case "success":
+                                titulo = "Pagamento aprovado!";
+                                mensagem = "Seu pedido foi confirmado e está em processamento. Você receberá novidades em breve.";
+                                iconClass = "bi bi-check-circle-fill text-success";
+                                badgeClass = "badge bg-success";
+                                break;
+
+                            case "pending":
+                                titulo = "Pagamento pendente";
+                                mensagem = "Seu pagamento ainda está sendo processado pelo Mercado Pago. Assim que for confirmado, seu pedido será atualizado.";
+                                iconClass = "bi bi-hourglass-split text-warning";
+                                badgeClass = "badge bg-warning text-dark";
+                                break;
+
+                            default:
+                                titulo = "Pagamento não concluído";
+                                mensagem = "O pagamento não foi concluído ou foi recusado. Você pode tentar novamente.";
+                                iconClass = "bi bi-x-circle-fill text-danger";
+                                badgeClass = "badge bg-danger";
+                                break;
+                        }
+                    }
+
+                    <i class="@iconClass" style="font-size: 3.5rem;"></i>
+                    <h2 class="mt-3 mb-2">@titulo</h2>
+                    <p class="text-muted mb-4">@mensagem</p>
+
+                    <div class="mb-3">
+                        <span class="badge bg-dark me-1">Pedido #@Model.Id</span>
+                        <span class="@badgeClass">@Model.Status</span>
+                    </div>
+
+                    <p class="fs-5 mb-1">
+                        <strong>Total pago:</strong>
+                        <span class="text-success">R$ @total.ToString("N2")</span>
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.MpPaymentId))
+                    {
+                        <p class="text-muted mb-4">
+                            <small>ID do pagamento: @Model.MpPaymentId</small>
+                        </p>
+                    }
+
+                    <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                        <a asp-action="Detalhes" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                            <i class="bi bi-receipt"></i> Ver detalhes do pedido
+                        </a>
+                        <a asp action="Historico" asp-controller="Pedidos" class="btn btn-outline-secondary">
+                            <i class="bi bi-clock-history"></i> Ver meus pedidos
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-shop"></i> Continuar comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

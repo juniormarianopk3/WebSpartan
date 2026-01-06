@@ -1,0 +1,46 @@
+﻿@model WebSpartan.Models.Configuracoes
+@{
+    ViewData["Title"] = "Limite de uso do Cashback";
+    var atual = (decimal)(ViewBag.PercentualAtual ?? 30m);
+}
+
+<div class="container py-4" style="max-width:720px;">
+    <h3 class="fw-bold mb-3">Limite de uso do Cashback</h3>
+
+    @if (TempData["MensagemSucesso"] != null)
+    {
+        <div class="alert alert-success">@TempData["MensagemSucesso"]</div>
+    }
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">@TempData["MsgErro"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <p class="text-muted mb-3">
+                Defina a porcentagem máxima do <b>subtotal dos produtos</b> que pode ser paga com cashback.
+            </p>
+
+            <form asp-action="EditCashbackLimite" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <label class="form-label">Máximo permitido</label>
+
+                <select name="percentual" class="form-select" required>
+                    @for (int p = 0; p <= 100; p += 5)
+                    {
+                        <option value="@p" selected="@(p == (int)atual)">
+                            @p%
+                        </option>
+                    }
+                </select>
+
+                <button class="btn btn-primary mt-3">
+                    <i class="bi bi-save"></i> Salvar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

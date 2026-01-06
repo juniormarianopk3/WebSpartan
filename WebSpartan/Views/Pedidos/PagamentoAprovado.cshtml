@@ -1,0 +1,87 @@
+﻿@model WebSpartan.Models.Pedido
+
+@{
+    ViewData["Title"] = "Pagamento aprovado 🎉";
+    var totalProdutos = Model.Subtotal;
+    var desconto = Model.Desconto;
+    var frete = Model.Frete;
+    var totalFinal = (totalProdutos - desconto) + frete;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Cabeçalho -->
+                    <div class="text-center mb-4">
+                        <div class="display-5">✅✨</div>
+                        <h2 class="fw-bold mb-1 text-success">Pagamento aprovado!</h2>
+                        <p class="text-muted mb-0">
+                            Seu pedido <strong>#@Model.Id</strong> foi confirmado com sucesso 🚀
+                        </p>
+                    </div>
+
+                    <!-- Aviso -->
+                    <div class="alert alert-success d-flex align-items-center gap-3 rounded-3 shadow-sm ">
+                        <div class="text-center">
+                            <div class="fw-semibold"><h3>🎉 Tudo certo com sua compra!</h3></div>
+                            <p class="mb-1">Seu pedido já consta como <b>PAGO</b> no sistema.</p>
+                            <p class ="mb-1"> 📦 O vendedor enviará o código de rastreio em breve para que você acompanhe sua entrega.</p>
+                            <p class ="mb-1">⏱️ Normalmente a postagem é feita diariamente, mas o prazo máximo para envio é de até <b>3 dias úteis</b></>. </p>
+                           
+
+                            <p class="mt-2">
+                                Enquanto isso, sinta-se à vontade para continuar explorando nossos produtos ou entrar em contato conosco caso tenha qualquer dúvida.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Valores -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <div class="small text-muted">💰 Total pago</div>
+                                <div class="fs-4 fw-bold text-success">@totalFinal.ToString("C")</div>
+                                <div class="small text-muted mt-2">
+                                    🛒 Subtotal: @Model.Subtotal.ToString("C") <br />
+                                    🚚 Frete: @Model.Frete.ToString("C") <br />
+                                    🎁 Desconto: -@Model.Desconto.ToString("C")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+                                <div class="small text-muted">💎 Cashback recebido</div>
+                                <div class="fs-5 fw-bold text-success">
+                                    + @Model.CashbackGerado.ToString("C")
+                                </div>
+                                <div class="small text-muted mt-2">
+                                    Esse valor já foi adicionado ao seu saldo para usar em próximas compras 🛍️
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 
+                    <hr class="my-4" />
+
+                    <!-- Botões -->
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <a asp-controller="Pedidos" asp-action="Detalhes" asp-route-id="@Model.Id"
+                           class="btn btn-success rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-receipt me-1"></i> Ver detalhes do pedido
+                        </a>
+
+                        <a asp-controller="Pedidos" asp-action="Historico"
+                           class="btn btn-outline-dark rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-list-ul me-1"></i> Ir para histórico
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

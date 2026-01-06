@@ -1,0 +1,177 @@
+﻿@model WebSpartan.Models.Pedido
+
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+    var total = Model.Subtotal + Model.Frete - Model.Desconto;
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-uppercase">Detalhes do Pedido #@Model.Id</h2>
+
+    <div class="row">
+        <!-- Info principal -->
+        <div class="col-lg-4 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-receipt"></i> Informações do Pedido
+                </div>
+                <div class="card-body">
+                    <p><strong>Número:</strong> @Model.Id</p>
+                    <p><strong>Data:</strong> @Model.Data.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p>
+                        <strong>Status:</strong>
+                        @switch (Model.Status)
+                        {
+                            case "Pendente":
+                                @:<span class="badge bg-warning text-dark">Pendente</span>
+                                break;
+                            case "Pago":
+                                @:<span class="badge bg-success">Pago</span>
+                                break;
+                            case "Cancelado":
+                                @:<span class="badge bg-danger">Cancelado</span>
+                                break;
+                            default:
+                                @:<span class="badge bg-secondary">@Model.Status</span>
+                                break;
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="col-lg-4 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-geo-alt"></i> Endereço de Entrega
+                </div>
+                <div class="card-body">
+                    @if (Model.EnderecoEntrega != null)
+                    {
+                        <p>
+                            @Model.EnderecoEntrega.Rua, @Model.EnderecoEntrega.Numero
+                            <br />
+                            @Model.EnderecoEntrega.Bairro<br />
+                            @Model.EnderecoEntrega.Cidade / @Model.EnderecoEntrega.Estado<br />
+                            CEP: @Model.EnderecoEntrega.Cep
+                        </p>
+                        @if (!string.IsNullOrWhiteSpace(Model.EnderecoEntrega.Complemento))
+                        {
+                            <p><strong>Complemento:</strong> @Model.EnderecoEntrega.Complemento</p>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Entrega a combinar com o vendedor.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Valores -->
+        <div class="col-lg-4 mb-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-cash-stack"></i> Resumo Financeiro
+                </div>
+                <div class="card-body">
+                    <p><strong>Subtotal:</strong> R$ @Model.Subtotal.ToString("N2")</p>
+                    <p><strong>Frete:</strong> R$ @Model.Frete.ToString("N2")</p>
+                    <p><strong>Desconto:</strong> R$ @Model.Desconto.ToString("N2")</p>
+                    <p><strong>CashBack:</strong> <span class="text-success">R$+  @Model.CashbackGerado.ToString("N2")</span></p>
+                    <hr />
+                    <p class="fs-5">
+                        <strong>Total:</strong>
+                        <span class="text-success">R$ @total.ToString("N2")</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Itens do pedido -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-dark text-white">
+            <i class="bi bi-bag"></i> Itens do Pedido
+        </div>
+        <div class="card-body">
+            @if (Model.Itens == null || !Model.Itens.Any())
+            {
+                <p class="text-muted">Nenhum item encontrado neste pedido.</p>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var item in Model.Itens)
+                    {
+                        var sub = item.Quantidade * item.ValorUnitario;
+                        var img = string.IsNullOrWhiteSpace(item.Produto?.ImagemUrl)
+                        ? Url.Content("~/imagens/no-image.png")
+                        : Url.Content(item.Produto.ImagemUrl);
+
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <!-- Imagem -->
+                            <img src="@img"
+                                 alt="@item.Produto?.Nome"
+                                 class="rounded border"
+                                 style="width: 80px; height: 80px; object-fit: contain;" />
+
+                            <!-- Informações -->
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold">@item.Produto?.Nome</h6>
+                                <p class="mb-1 text-muted small">
+                                    @if (!string.IsNullOrWhiteSpace(item.Produto?.Descricao))
+                                    {
+                                        @Html.Raw(item.Produto.Descricao.Length > 60
+                                                 ? item.Produto.Descricao.Substring(0, 60) + "..."
+                                                 : item.Produto.Descricao)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sem descrição</span>
+                                    }
+                                </p>
+                                <div class="d-flex flex-wrap gap-3 small">
+                                    <p action="mb-2"> <strong>Quantidade:</strong> @item.Quantidade</p>
+                                    <p action="mb-2"><strong>Valor Unitário:</strong> R$ @item.ValorUnitario.ToString("N2")</p>
+                                    <p action="mb-2">
+                                        
+                                        <strong>Subtotal:</strong>
+                                        <span class="fw-semibold text-success">R$ @sub.ToString("N2")</span>
+                                   
+                                    </p>
+                                </div>
+                                @if (item.Produto?.CashbackPercentual > 0)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success mt-2">
+                                        <i class="bi bi-piggy-bank-fill"></i>
+                                        @((int)(item.Produto.CashbackPercentual * 100M))% de cashback
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <div class="mt-4 d-flex justify-content-between">
+        <a asp-action="Historico" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar ao histórico
+        </a>
+
+        @if (Model.Status != "Pago")
+        {
+            <a asp-controller="Pedidos" asp-action="Pix" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="bi bi-shop"></i> Continuar Compra com PIX
+            </a>
+
+            <a asp-controller="Pedidos" asp-action="Cartao" asp-route-id="@Model.Id" class="btn btn-secondary">
+                <i class="bi bi-shop"></i> Continuar Compra com Cartão
+            </a>
+        }
+    </div>
+</div>

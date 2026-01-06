@@ -1,0 +1,50 @@
+﻿@model IEnumerable<WebSpartan.Models.UserAddress>
+@{
+    ViewData["Title"] = "Meus Endereços";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Meus Endereços</h2>
+
+    <a asp-action="Criar" class="btn btn-dark mb-3">Adicionar Endereço</a>
+
+    @if (!Model.Any())
+    {
+        <p>Nenhum endereço cadastrado.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rua</th>
+                    <th>Número</th>
+                    <th>Bairro</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Principal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>@e.Rua</td>
+                        <td>@e.Numero</td>
+                        <td>@e.Bairro</td>
+                        <td>@e.Cidade</td>
+                        <td>@e.Estado</td>
+                        <td>@(e.Principal ? "✔️" : "")</td>
+                        <td>
+                            <a asp-action="Editar" asp-route-id="@e.Id" class="btn btn-sm btn-primary">Editar</a>
+                            <form asp-action="Excluir" asp-route-id="@e.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

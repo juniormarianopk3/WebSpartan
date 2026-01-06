@@ -1,0 +1,154 @@
+﻿@model WebSpartan.Models.Pedido
+
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+
+    var endereco = Model.EnderecoEntrega;
+    var status = Model.Status ?? "";
+
+    var badgeClass =
+        status == "PAGO" || status == "Pago" || status == "Aprovado"
+            ? "bg-success"
+            : status == "Rejeitado"
+                ? "bg-danger"
+                : "bg-warning text-dark";
+}
+
+<div class="container py-4">
+    <h3 class="fw-bold mb-3 text-center text-secondary">
+        Detalhes do Pedido #@Model.Id
+    </h3>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title"> @Model.User?.NomeCompleto</h5>
+
+            <p class="card-text mb-2">
+                <strong>Email:</strong> @Model.User?.Email <br />
+                <strong>Telefone:</strong> @Model.User?.PhoneNumber <br />
+                <strong>CPF:</strong> @Model.User?.CPF <br />
+                <strong>Data:</strong> @Model.Data.ToLocalTime().ToString("dd/MM/yyyy HH:mm") <br />
+                <strong>Status:</strong>
+                <span class="badge @badgeClass">
+                    @status
+                </span>
+            </p>
+
+            @if (endereco != null)
+            {
+                <hr />
+                <h6 class="fw-bold mb-2">Endereço de entrega</h6>
+
+                <p class="mb-1">
+                    <strong>CEP:</strong> @endereco.Cep
+                </p>
+                <p class="mb-1">
+                    <strong>Endereço:</strong>
+                    @endereco.Rua, @endereco.Numero
+                   
+                </p>
+                <p class="mb-1">
+                    @if (!string.IsNullOrWhiteSpace(endereco.Complemento))
+                    {
+                        <strong>Complemento:</strong> @endereco.Complemento
+                        
+                    }
+                </p>
+                <p class="mb-1">
+                    <strong>Bairro:</strong> @endereco.Bairro
+                </p>
+                <p class="mb-0">
+                    <strong>Cidade/UF:</strong> @endereco.Cidade/@endereco.Estado
+                </p>
+            }
+            else
+            {
+                <hr />
+                <p class="text-muted mb-0">
+                    Nenhum endereço de entrega associado a este pedido.
+                </p>
+            }
+        </div>
+    </div>
+
+    <h5>Itens do Pedido</h5>
+    <div class="card-body">
+            @if (Model.Itens == null || !Model.Itens.Any())
+            {
+                <p class="text-muted">Nenhum item encontrado neste pedido.</p>
+            }
+            else
+            {
+      <div class="list-group">
+            @foreach (var item in Model.Itens)
+            {
+                var sub = item.Quantidade * item.ValorUnitario;
+                var img = string.IsNullOrWhiteSpace(item.Produto?.ImagemUrl)
+                ? Url.Content("~/imagens/no-image.png")
+                : Url.Content(item.Produto.ImagemUrl);
+
+                <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                    <!-- Imagem -->
+                    <img src="@img"
+                         alt="@item.Produto?.Nome"
+                         class="rounded border"
+                         style="width: 80px; height: 80px; object-fit: contain;" />
+
+                    <!-- Informações -->
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1 fw-bold">@item.Produto?.Nome</h6>
+                        <p class="mb-1 text-muted small">
+                            @if (!string.IsNullOrWhiteSpace(item.Produto?.Descricao))
+                            {
+                                @Html.Raw(item.Produto.Descricao.Length > 60
+                                         ? item.Produto.Descricao.Substring(0, 60) + "..."
+                                         : item.Produto.Descricao)
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sem descrição</span>
+                            }
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 small">
+                            <p action="mb-2"> <strong>Quantidade:</strong> @item.Quantidade</p>
+                            <p action="mb-2"><strong>Valor Unitário:</strong> R$ @item.ValorUnitario.ToString("N2")</p>
+                            <p action="mb-2">
+
+                                <strong>Subtotal:</strong>
+                                <span class="fw-semibold text-success">R$ @sub.ToString("N2")</span>
+
+                            </p>
+                        </div>
+                        @if (item.Produto?.CashbackPercentual > 0)
+                        {
+                            <span class="badge bg-success-subtle text-success border border-success mt-2">
+                                <i class="bi bi-piggy-bank-fill"></i>
+                                @((int)(item.Produto.CashbackPercentual * 100M))% de cashback
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+            }
+    </div>
+
+    @{
+        var total = Model.Subtotal + Model.Frete - Model.Desconto;
+    }
+
+    <div class="text-end mt-4">
+        <p><strong>Subtotal:</strong> @Model.Subtotal.ToString("C")</p>
+        <p><strong>Frete:</strong> @Model.Frete.ToString("C")</p>
+        <p><strong>Desconto:</strong> @Model.Desconto.ToString("C")</p>
+        <p><strong>CashBack:</strong> <span class="text-success">R$+  @Model.CashbackGerado.ToString("N2")</span></p>
+
+        <h4 class="fw-bold">Total: @total.ToString("C")</h4>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="/AdminPedidos/Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+</div>

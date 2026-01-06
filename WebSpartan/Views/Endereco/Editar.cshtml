@@ -1,0 +1,79 @@
+﻿@model WebSpartan.Models.UserAddress
+@{
+    ViewData["Title"] = "Cadastrar Endereço";
+}
+
+<div class="container mt-4" style="max-width:600px;">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    <form asp-action="@(ViewContext.RouteData.Values["action"])" method="post">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label>CEP</label>
+            <input asp-for="Cep" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Rua</label>
+            <input asp-for="Rua" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Número</label>
+            <input asp-for="Numero" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Bairro</label>
+            <input asp-for="Bairro" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Cidade</label>
+            <input asp-for="Cidade" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Estado" class="form-label"></label>
+            <select asp-for="Estado" class="form-select" id="Estado">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+            </select>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Complemento</label>
+            <input asp-for="Complemento" class="form-control" />
+        </div>
+        <div class="form-check mb-3">
+            <input asp-for="Principal" class="form-check-input" />
+            <label class="form-check-label">Endereço principal</label>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Salvar</button>
+    </form>
+</div>

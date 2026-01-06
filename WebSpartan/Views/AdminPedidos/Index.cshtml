@@ -1,0 +1,65 @@
+﻿@model IEnumerable<WebSpartan.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Gerenciar Pedidos";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4 text-center text-primary">📦 Gerenciar Pedidos</h2>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success">@TempData["Msg"]</div>
+    }
+
+    <table class="table table-hover align-middle shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.User?.NomeCompleto</td>
+                    <td>@p.Data.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <span class="badge
+                            @(p.Status == "Pago" ? "bg-success" :
+                              p.Status == "Rejeitado" ? "bg-danger" : "bg-warning text-dark")">
+                            @p.Status
+                        </span>
+                    </td>
+                    <td class="fw-bold text-success">@p.Subtotal.ToString("C")</td>
+                    <td>
+                        <a href="/AdminPedidos/Detalhes/@p.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        @if (p.Status == "Aguardando Pagamento")
+                        {
+                            <form asp-action="Aprovar" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check2-circle"></i> Aprovar
+                                </button>
+                            </form>
+                            <form asp-action="Rejeitar" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-x-circle"></i> Rejeitar
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,427 @@
+﻿@model WebSpartan.Models.Pedido
+
+@{
+    ViewData["Title"] = "Pagamento PIX - Pedido #" + Model.Id;
+
+    var totalProdutos = Model.Subtotal;
+    var cashback = Model.Desconto;
+    var frete = Model.Frete;
+    var totalFinal = (totalProdutos - cashback) + frete;
+    var cashbackGerado = Model.CashbackGerado;
+
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h3 class="fw-bold mb-3">🧾 Pedido #@Model.Id</h3>
+
+                    <p class="text-muted mb-1">
+                        <strong>Status atual:</strong> <span id="statusPedido">@Model.Status</span>
+                    </p>
+
+                    <p class="text-muted mb-3">
+                        <strong>Valor total:</strong> @totalFinal.ToString("C")
+                    </p>
+
+                    <hr />
+
+                    <h5 class="fw-semibold mb-3">Itens do pedido</h5>
+
+                    <ul class="list-group mb-4">
+                        @foreach (var item in Model.Itens)
+                        {
+                            
+                                var img = string.IsNullOrWhiteSpace(item.Produto?.ImagemUrl)
+                                ? Url.Content("~/imagens/no-image.png")
+                                : Url.Content(item.Produto.ImagemUrl);
+
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@img"
+                                             alt="@item.Produto?.Nome"
+                                             class="rounded"
+                                             style="width:55px;height:55px;object-fit:cover;" />
+
+                                        <div>
+                                            <strong>@item.Produto?.Nome</strong><br />
+                                            <small class="text-muted">
+                                                Qtd: @item.Quantidade &middot;
+                                                Unid: @item.ValorUnitario.ToString("C")
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                 
+                                </li>
+                            
+
+                        }
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span><b>Subtotal</b></span>
+                            <span>@Model.Subtotal.ToString("C")</span>
+                        </li>
+
+                        
+                        
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span><b>Frete</b></span>
+                            <span>@Model.Frete.ToString("C")</span>
+                        </li>
+                        @if (Model.Desconto > 0)
+                        {
+                            <li class="list-group-item d-flex justify-content-between text-success">
+                                <span><b>Desconto</b></span>
+                                <span>- @Model.Desconto.ToString("C")</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between fw-bold">
+                            <span>Total</span>
+                            <span>@totalFinal.ToString("C")</span>
+                        </li>
+                        @if (cashbackGerado > 0)
+                        {
+                            <li class="list-group-item d-flex justify-content-between text-success ">
+                                <span><b>Cashback que você vai ganhar</b></span>
+                                <span>+ @cashbackGerado.ToString("C")</span>
+                            </li>
+                            <li class="list-group-item -dflex">
+                                <small class="text-muted small">
+                                    Esse valor entra no seu saldo <b>somente após a aprovação do pagamento</b>. (Frete não gera cashback)
+                                </small>
+                            </li>
+                        }
+                        @if (Model.EntregaCombinada)
+                        {<li class="list-group-item">
+                            <div class="alert alert-warning">
+                                <b>Entrega:</b> a combinar com o vendedor, entre em contato via WhatsApp.
+                            </div>
+                            </li>
+                        }
+                       
+                    </ul> @* ✅ FECHA O UL AQUI *@
+
+                    <div class="mb-4">
+                        <h5 class="fw-semibold mb-2">Pagamento via PIX</h5>
+                        <p class="text-muted mb-2">
+                            Clique em <strong>Gerar PIX</strong> para gerar o QR Code do seu pedido.
+                        </p>
+
+                        <button id="btnGerarPix" class="btn btn-success rounded-pill px-4 mb-3">
+                            <i class="bi bi-qr-code-scan me-1"></i> Gerar PIX
+                        </button>
+
+                        <div id="pixArea" class="text-center" style="display:none;">
+                            <h6 class="fw-semibold mb-2">Escaneie o QR Code com o app do seu banco</h6>
+                            <img id="imgQrCode" src="" alt="QR Code PIX" class="img-fluid mb-3" style="max-width:260px;" />
+
+                            <div class="mb-2">
+                                <small class="text-muted d-block mb-1">Ou copie o código PIX:</small>
+                                <code id="qrCodeTexto" class="d-block p-2 bg-light rounded small text-break"></code>
+                            </div>
+
+                            <button id="btnCopiar" type="button" class="btn btn-outline-secondary btn-sm mb-3">
+                                <i class="bi bi-clipboard-check me-1"></i> Copiar código
+                            </button>
+
+                            <div class="mt-3">
+                                <button id="btnVerificar" type="button" class="btn btn-primary rounded-pill px-4">
+                                    <i class="bi bi-check-circle me-1"></i> Já paguei, verificar status
+                                </button>
+                            </div>
+
+                            <div id="statusAlert" class="mt-3"></div>
+                        </div>
+                    </div>
+
+                    <a asp-controller="Pedidos" asp-action="Historico" class="btn btn-outline-dark btn-sm">
+                        <i class="bi bi-arrow-left"></i> Voltar para histórico
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const pedidoId = @Model.Id;
+
+        // ===== CONFIG =====
+        const STORAGE_KEY = `pix_payment_${pedidoId}`;
+        const INTERVAL_MS = 7000;     // checa a cada 7s
+        const MAX_MINUTES = 15;       // para de checar após 15 min
+        const MAX_TRIES = Math.ceil((MAX_MINUTES * 60 * 1000) / INTERVAL_MS);
+
+        let paymentId = null;
+        let intervalHandle = null;
+        let tries = 0;
+
+        async function gerarOuRecarregarPix(pedidoId) {
+            const anti = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            const r = await fetch('/Payment/CreatePix?pedidoId=' + pedidoId, {
+                method: 'POST',
+                headers: anti ? { 'RequestVerificationToken': anti } : {}
+            });
+
+            const data = await r.json();
+
+            if (data.error) {
+                console.error(data);
+                alert(data.message || 'Erro ao gerar PIX');
+                return;
+            }
+
+            // ✅ render QR
+            if (data.qrCodeBase64) {
+                document.getElementById('imgQr').src = 'data:image/png;base64,' + data.qrCodeBase64;
+            }
+            if (data.qrCode) {
+                document.getElementById('pixCopiaCola').value = data.qrCode;
+            }
+
+            // salva paymentId pro polling
+            window.paymentId = data.paymentId;
+            startPolling();
+        }
+
+        function showStatusAlert(type, title, message) {
+            const alert = document.getElementById('statusAlert');
+            if (!alert) return;
+
+            let icon = 'bi-info-circle';
+            if (type === 'success') icon = 'bi-check-circle-fill';
+            else if (type === 'warning') icon = 'bi-exclamation-triangle-fill';
+            else if (type === 'danger') icon = 'bi-x-circle-fill';
+
+            alert.className = `alert alert-${type} mt-3`;
+            alert.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${icon} me-2 fs-4"></i>
+                        <div>
+                            <strong>${title}</strong><br />
+                            <span>${message}</span>
+                        </div>
+                    </div>`;
+        }
+
+        function salvarPaymentId(id) {
+            paymentId = id;
+            localStorage.setItem(STORAGE_KEY, String(id));
+        }
+
+        function carregarPaymentId() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved && saved.trim() !== '') {
+                paymentId = saved;
+                return true;
+            }
+            return false;
+        }
+
+        function limparPaymentId() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        function iniciarAutoCheck() {
+            if (!paymentId) return;
+
+            // evita múltiplos intervals
+            if (intervalHandle) clearInterval(intervalHandle);
+            tries = 0;
+
+            showStatusAlert(
+                'info',
+                'Aguardando confirmação…',
+                'Vamos verificar automaticamente o status do seu PIX a cada alguns segundos.'
+            );
+
+            intervalHandle = setInterval(() => {
+                tries++;
+
+                // parou por tempo
+                if (tries > MAX_TRIES) {
+                    clearInterval(intervalHandle);
+                    intervalHandle = null;
+                    showStatusAlert(
+                        'warning',
+                        'Verificação pausada',
+                        'Passamos um tempo verificando e ainda não confirmou. Você pode clicar em "Já paguei, verificar status" quando quiser.'
+                    );
+                    return;
+                }
+
+                // checa
+                verificarPagamento(true);
+            }, INTERVAL_MS);
+        }
+
+        function pararAutoCheck() {
+            if (intervalHandle) {
+                clearInterval(intervalHandle);
+                intervalHandle = null;
+            }
+        }
+        async function carregarPixDaTela(pedidoId) {
+            const r = await fetch(`/Payment/CheckPaymentByPedido?pedidoId=${pedidoId}`, { cache: "no-store" });
+            const data = await r.json();
+
+            if (data.qrCodeBase64) {
+                document.getElementById("imgQr").src = `data:image/png;base64,${data.qrCodeBase64}`;
+            }
+            if (data.qrCode) {
+                document.getElementById("txtCopiaCola").value = data.qrCode;
+            }
+        }
+        // ===== BOTÕES =====
+        document.getElementById('btnGerarPix')?.addEventListener('click', gerarPix);
+
+        function gerarPix() {
+            const btnGerar = document.getElementById('btnGerarPix');
+            btnGerar.disabled = true;
+            btnGerar.innerText = 'Gerando PIX...';
+
+            showStatusAlert(
+                'info',
+                'Gerando código PIX…',
+                'Estamos criando o QR Code do seu pagamento. Isso leva só alguns segundos.'
+            );
+
+            fetch('/Payment/CreatePix?pedidoId=' + pedidoId, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showStatusAlert('danger', 'Erro ao gerar PIX', data.message || 'Erro ao gerar PIX.');
+                        btnGerar.disabled = false;
+                        btnGerar.innerText = 'Gerar PIX';
+                        return;
+                    }
+
+                    // ✅ guarda o paymentId e persiste
+                    salvarPaymentId(data.paymentId);
+
+                    if (data.qrCodeBase64) {
+                        document.getElementById('imgQrCode').src = 'data:image/png;base64,' + data.qrCodeBase64;
+                    }
+                    document.getElementById('qrCodeTexto').textContent = data.qrCode || '';
+
+                    document.getElementById('pixArea').style.display = 'block';
+                    btnGerar.innerText = 'PIX gerado';
+
+                    showStatusAlert(
+                        'success',
+                        'PIX gerado com sucesso!',
+                        'Escaneie o QR Code com o app do seu banco. Vamos checar automaticamente até confirmar.'
+                    );
+
+                    // ✅ inicia auto-check
+                    iniciarAutoCheck();
+                })
+                .catch(err => {
+                    console.error(err);
+                    showStatusAlert('danger', 'Falha na comunicação', 'Não foi possível se comunicar com o servidor.');
+                    btnGerar.disabled = false;
+                    btnGerar.innerText = 'Gerar PIX';
+                });
+        }
+
+        document.getElementById('btnCopiar')?.addEventListener('click', function () {
+            const texto = document.getElementById('qrCodeTexto').textContent;
+            if (!texto) return;
+
+            navigator.clipboard.writeText(texto)
+                .then(() => showStatusAlert('success', 'Código copiado!', 'Cole no app do seu banco para pagar.'))
+                .catch(() => showStatusAlert('warning', 'Não foi possível copiar', 'Copie manualmente o texto acima.'));
+        });
+
+        document.getElementById('btnVerificar')?.addEventListener('click', function () {
+            if (!paymentId && !carregarPaymentId()) {
+                showStatusAlert('warning', 'Gere o PIX primeiro', 'Você precisa gerar o PIX antes de verificar.');
+                return;
+            }
+            verificarPagamento(false);
+        });
+
+        // ===== VERIFICAÇÃO =====
+        function verificarPagamento(isAuto = false) {
+            if (!paymentId) return;
+
+            const btnVerificar = document.getElementById('btnVerificar');
+            if (!isAuto) {
+                btnVerificar.disabled = true;
+                showStatusAlert('info', 'Verificando pagamento…', 'Consultando o sistema para saber se já foi aprovado.');
+            }
+
+            fetch('/Payment/CheckPayment?paymentId=' + paymentId)
+                .then(r => r.json())
+                .then(data => {
+                    const status = (data.status || data.Status || '').toLowerCase();
+
+                    // ✅ aprovado: para o timer, limpa storage e redireciona
+                    if (status === 'approved') {
+                        pararAutoCheck();
+                        limparPaymentId();
+
+                        showStatusAlert(
+                            'success',
+                            'Pagamento aprovado! ✅',
+                            'Seu pagamento foi confirmado. Redirecionando...'
+                        );
+
+                        document.getElementById('statusPedido').textContent = 'Pago';
+
+                        setTimeout(() => {
+                            window.location.href = data.redirectUrl || ('/Pedidos/PagamentoAprovado/' + pedidoId);
+                        }, 1200);
+
+                        return;
+                    }
+
+                    // pendente: se for auto-check não fica “spammando” alerta toda hora
+                    if (status === 'pending' || status === 'in_process') {
+                        if (!isAuto) {
+                            showStatusAlert('warning', 'Ainda não aprovado', `Status atual: ${status}. Aguarde e tente novamente.`);
+                            btnVerificar.disabled = false;
+                        }
+                        return;
+                    }
+
+                    // outros status
+                    if (!isAuto) {
+                        showStatusAlert('danger', 'Status do pagamento', `Recebemos o status: ${status}.`);
+                        btnVerificar.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    if (!isAuto) {
+                        showStatusAlert('danger', 'Erro ao verificar', 'Ocorreu um erro ao consultar o status.');
+                        document.getElementById('btnVerificar').disabled = false;
+                    }
+                });
+        }
+
+        // ===== AUTO-RECOVERY (se o usuário saiu e voltou) =====
+        document.addEventListener('DOMContentLoaded', function () {
+            // Se já existe paymentId salvo, mostra área e começa a verificar de novo
+            if (carregarPaymentId()) {
+                document.getElementById('pixArea').style.display = 'block';
+
+                showStatusAlert(
+                    'info',
+                    'PIX encontrado',
+                    'Você já tinha um PIX gerado para esse pedido. Vamos continuar verificando automaticamente.'
+                );
+
+                iniciarAutoCheck();
+            }
+        });
+    </script>
+}
+
+
+

@@ -1,0 +1,130 @@
+﻿@model WebSpartan.Models.ViewModels.RegistrarViewModel
+@{
+    ViewData["Title"] = "Registrar";
+}
+
+<div class="container mt-5" style="max-width:500px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h2 class="text-center mb-4 fw-bold">Crie sua conta</h2>
+
+            <form asp-action="Registrar" method="post" novalidate class="needs-validation">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small mb-3"></div>
+
+                <!-- Nome -->
+                <div class="mb-3">
+                    <label asp-for="NomeCompleto" class="form-label fw-semibold">Nome completo</label>
+                    <div class="input-group">
+                        <span class="input-group-text">👤</span>
+                        <input asp-for="NomeCompleto"
+                               class="form-control"
+                               placeholder="Digite seu nome completo"
+                               autocomplete="name" />
+                    </div>
+                    <span asp-validation-for="NomeCompleto" class="text-danger small"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold">E-mail</label>
+                    <div class="input-group">
+                        <span class="input-group-text">📧</i></span>
+                        <input asp-for="Email"
+                               class="form-control"
+                               placeholder="exemplo@dominio.com"
+                               autocomplete="email"
+                               inputmode="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <!-- Telefone -->
+                <div class="mb-3">
+                    <label asp-for="Telefone" class="form-label fw-semibold">Telefone</label>
+                    <div class="input-group">
+                        <span class="input-group-text">📱</i></span>
+                        <input asp-for="Telefone"
+                               class="form-control"
+                               id="telefone"
+                               placeholder="(99) 99999-9999"
+                               autocomplete="tel"
+                               inputmode="tel" />
+                    </div>
+
+                    <!-- ✅ Mensagem discreta -->
+                    <div class="form-text small text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Use o número que você utiliza no WhatsApp para facilitar o contato sobre compras futuras.
+                    </div>
+
+                    <span asp-validation-for="Telefone" class="text-danger small"></span>
+                </div>
+
+                <!-- CPF -->
+                <div class="mb-3">
+                    <label asp-for="CPF" class="form-label fw-semibold">CPF</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🆔</span>
+                        <input asp-for="CPF"
+                               class="form-control"
+                               id="cpf"
+                               placeholder="000.000.000-00"
+                               autocomplete="off"
+                               inputmode="numeric" />
+                    </div>
+                    <span asp-validation-for="CPF" class="text-danger small"></span>
+                </div>
+
+                <!-- Senha -->
+                <div class="mb-3">
+                    <label asp-for="Senha" class="form-label fw-semibold">Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</i></span>
+                        <input asp-for="Senha"
+                               class="form-control"
+                               type="password"
+                               placeholder="Crie uma senha"
+                               autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="Senha" class="text-danger small"></span>
+                </div>
+
+                <!-- Confirmar senha -->
+                <div class="mb-4">
+                    <label asp-for="ConfirmarSenha" class="form-label fw-semibold">Confirmar senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text">✅</i></span>
+                        <input asp-for="ConfirmarSenha"
+                               class="form-control"
+                               type="password"
+                               placeholder="Repita a senha"
+                               autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="ConfirmarSenha" class="text-danger small"></span>
+                </div>
+
+                <!-- Botão -->
+                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                    <i class="bi bi-person-plus me-1"></i> Registrar
+                </button>
+            </form>
+
+
+            <div class="text-center mt-3">
+                <span class="text-muted">Já tem conta?</span>
+                <a asp-action="Login" class="fw-semibold text-decoration-none">Entrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
+    <script>
+        $(function () {
+            $("#telefone").inputmask("(99) 99999-9999"); // máscara para celular
+            $("#cpf").inputmask("999.999.999-99");      // máscara para CPF
+        });
+    </script>
+}

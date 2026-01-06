@@ -1,0 +1,77 @@
+﻿@model WebSpartan.Models.ViewModels.CashbackExtratoViewModel
+@{
+    ViewData["Title"] = "Meu Cashback";
+}
+
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="fw-bold mb-0">💰 Meu Cashback</h3>
+        <a asp-action="Painel" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+                <div>
+                    <div class="text-muted">Saldo disponível</div>
+                    <div class="fs-3 fw-bold text-success">@Model.SaldoAtual.ToString("C")</div>
+                    <small class="text-muted">O saldo pode ser usado até o limite configurado (ex.: 30% do subtotal).</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="fw-semibold mb-2">Extrato</h5>
+
+    @if (!Model.Movimentos.Any())
+    {
+        <div class="alert alert-info">
+            Ainda não há movimentos de cashback.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th class="text-end">Valor</th>
+                            <th class="text-end">Saldo após</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.Movimentos)
+                        {
+                            var isCredito = m.Tipo?.ToUpper() == "CREDITO";
+                            <tr>
+                                <td class="text-muted">@m.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="badge @(isCredito ? "bg-success" : "bg-danger")">
+                                        @(isCredito ? "CRÉDITO" : "DÉBITO")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">@m.Descricao</div>
+                                    @if (m.PedidoId.HasValue)
+                                    {
+                                        <a class="small text-muted" href="/Pedidos/Detalhes/@m.PedidoId">Ver pedido #@m.PedidoId</a>
+                                    }
+                                </td>
+                                <td class="text-end @(isCredito ? "text-success" : "text-danger")">
+                                    @(isCredito ? "+" : "-") @m.Valor.ToString("C")
+                                </td>
+                                <td class="text-end fw-semibold">@m.SaldoDepois.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

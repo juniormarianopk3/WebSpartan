@@ -1,0 +1,31 @@
+﻿@model WebSpartan.Models.FreteEstado
+@{
+    ViewData["Title"] = "Editar Frete";
+}
+
+<div class="container py-4">
+    <h2>Editar Frete - @Model.Estado</h2>
+
+    <form asp-action="Editar" method="post">
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="mb-3">
+            <label asp-for="Estado" class="form-label"></label>
+            <input asp-for="Estado" class="form-control" />
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Valor" class="form-label"></label>
+            <input asp-for="Valor" class="form-control" />
+            <span asp-validation-for="Valor" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

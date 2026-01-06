@@ -1,0 +1,92 @@
+﻿@{
+    ViewData["Title"] = "Painel Administrativo";
+}
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-center text-danger">🛡️ Painel Administrativo</h2>
+
+    <div class="row g-4">
+        <!-- Produtos -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-box-seam fs-2 text-primary"></i>
+                    <h6 class="mt-2">Gerenciar Produtos</h6>
+                    <a asp-controller="AdminProduto" asp-action="Index" class="btn btn-outline-primary btn-sm mt-2">
+                        Acessar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuários -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-people fs-2 text-success"></i>
+                    <h6 class="mt-2">Usuários</h6>
+                    <a asp-controller="Admin" asp-action="Usuarios" class="btn btn-outline-success btn-sm mt-2">
+                        Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pedidos -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-cart-check fs-2 text-warning"></i>
+                    <h6 class="mt-2">Pedidos</h6>
+                    <p class="small text-muted">Gerencie e acompanhe pedidos dos clientes.</p>
+                    <a asp-controller="AdminPedidos" asp-action="Index" class="btn btn-outline-warning btn-sm mt-2">
+                        <i class="bi bi-list-ul"></i> Ver Pedidos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-whatsapp fs-2 text-success"></i>
+                    <h6 class="mt-2">WhatsApp</h6>
+                    <a asp-controller="Admin" asp-action="EditWhatsApp" class="btn btn-outline-success btn-sm mt-2">
+                        Editar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Frete por Estado / Região -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-truck fs-2 text-info"></i>
+                    <h6 class="mt-2">Frete por Estado</h6>
+                    <p class="small text-muted">
+                        Defina o valor do frete por UF/região.
+                    </p>
+                    <a asp-controller="AdminFrete" asp-action="Index" class="btn btn-outline-info btn-sm mt-2">
+                        <i class="bi bi-gear"></i> Configurar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="bi bi-piggy-bank fs-2 text-success"></i>
+                    <h6 class="mt-2">Cashback</h6>
+                    <p class="small text-muted">Limite máximo de uso por compra.</p>
+                    <a asp-controller="Admin" asp-action="EditCashbackLimite"
+                       class="btn btn-outline-success btn-sm mt-2">
+                        Configurar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

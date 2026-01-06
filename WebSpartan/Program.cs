@@ -1,35 +1,51 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+ï»¿using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
+using WebSpartan;
+using WebSpartan.Models;
 using WebSpartan.Models.Filters;
-using WebSpartan.Settings;
-
+using WebSpartan.Services;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC + filtros globais
 builder.Services.AddControllersWithViews(options =>
 {
-    options.Filters.Add<WhatsAppViewBagFilter>(); // adiciona o filtro global
-}); 
-builder.Services.AddDistributedMemoryCache(); // Armazena dados da sessão na memória
+    options.Filters.Add<WhatsAppViewBagFilter>();
+});
+
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tempo de expiração
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+// Banco de dados
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-               .AddCookie(options =>
-               {
-                   options.LoginPath = "/Conta/Login";           // redireciona para /Conta/Login se não autenticado
-                   options.AccessDeniedPath = "/Conta/AcessoNegado"; // página quando usuário não tiver permissão
-                   options.ExpireTimeSpan = TimeSpan.FromHours(1);
-               });
+// âœ… Identity (Ãºnico sistema de autenticaÃ§Ã£o)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 4;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
-// 2. Configurar autorização com role “Admin”
+// ðŸ”¹ ConfiguraÃ§Ã£o do cookie padrÃ£o do Identity
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Usuario/Login";
+    options.AccessDeniedPath = "/Usuario/AcessoNegado";
+    options.ExpireTimeSpan = TimeSpan.FromHours(1);
+});
+
+// ðŸ”¹ AutorizaÃ§Ã£o
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("SomenteAdmin", policy =>
@@ -38,29 +54,78 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.Configure<AdminCredentialsSettings>(
-    builder.Configuration.GetSection("AdminCredentials"));
+
 builder.Services.AddScoped<WhatsAppViewBagFilter>();
+builder.Services.AddScoped<IFreteService, FreteService>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+     db.Database.Migrate();   
 
-// Configure the HTTP request pipeline.
+}
+
+
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseDeveloperExceptionPage();
+
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseAuthentication();
+app.UseAuthentication(); // Identity usa isso
 app.UseAuthorization();
-app.UseSession(); // Ative a sessão aqui
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// ðŸ”¹ (Opcional) cria roles/admin automaticamente
+using (var scope = app.Services.CreateScope())
+{
+    await SeedDataAsync(scope.ServiceProvider);
+}
+
 app.Run();
+
+app.Run();
+
+async Task SeedDataAsync(IServiceProvider services)
+{
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+    string[] roles = { "Admin", "User" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    var adminEmail = "admin@admin.com";
+    var admin = await userManager.FindByEmailAsync(adminEmail);
+
+    if (admin == null)
+    {
+        admin = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            NomeCompleto = "Administrador do Sistema",
+            CPF = "123.456.789-01"
+        };
+
+        var result = await userManager.CreateAsync(admin, "SenhaSegura123!");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(admin, "Admin");
+    }
+}
+

@@ -24,14 +24,12 @@
     <Compile Remove="Views\Home\Editar.cshtml.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="Views\Home\Criar - Cópia.cshtml" />
-    <Content Remove="wwwroot\imagens\d8a9a65a-2ba8-49a4-bd79-7481eda26147.png" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageReference Include="mercadopago-sdk" Version="2.10.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

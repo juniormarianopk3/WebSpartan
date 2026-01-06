@@ -1,0 +1,75 @@
+﻿@model List<WebSpartan.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Meus Pedidos";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-uppercase">Meus Pedidos</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            Você ainda não tem pedidos.
+            <br />
+            <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-primary mt-2">
+                <i class="bi bi-bag-plus"></i> Ver produtos
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Subtotal</th>
+                        <th>Frete</th>
+                        <th>Desconto</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        var total = p.Subtotal + p.Frete - p.Desconto;
+                        <tr>
+                            <td>@p.Id</td>
+                            <td>@p.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @switch (p.Status)
+                                {
+                                    case "Pendente":
+                                        @:<span class="badge bg-warning text-dark">Pendente</span>
+                                        break;
+                                    case "Pago":
+                                        @:<span class="badge bg-success">Pago</span>
+                                        break;
+                                    case "Cancelado":
+                                        @:<span class="badge bg-danger">Cancelado</span>
+                                        break;
+                                    default:
+                                        @:<span class="badge bg-secondary">@p.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td>R$ @p.Subtotal.ToString("N2")</td>
+                            <td>R$ @p.Frete.ToString("N2")</td>
+                            <td>R$ @p.Desconto.ToString("N2")</td>
+                            <td><strong>R$ @total.ToString("N2")</strong></td>
+                            <td class="text-end">
+                                <a asp-action="Detalhes" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Detalhes
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

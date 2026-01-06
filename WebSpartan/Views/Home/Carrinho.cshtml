@@ -1,408 +1,89 @@
 ﻿@model WebSpartan.Models.ViewModels.CarrinhoViewModel
-
 @{
-    ViewData["Title"] = "Finalizar Pedido";
+    ViewData["Title"] = "Meu Carrinho";
     decimal total = Model.Itens.Sum(i => i.Produto.Preco * i.Quantidade);
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-4">
+    <h2 class="mb-4">Seu Carrinho</h2>
 
-<form asp-action="Carrinho" asp-controller="Home" method="post" id="formPedido" novalidate>
+    @if (!Model.Itens.Any())
+    {
+        <div class="alert alert-warning">
+            Seu carrinho está vazio.
+        </div>
+    }
+    else
+    {
+        <ul class="list-group mb-4">
+            @foreach (var item in Model.Itens)
+            {
+                var img = string.IsNullOrWhiteSpace(item.Produto.ImagemUrl)
+                ? Url.Content("~/imagens/no-image.png")
+                : Url.Content(item.Produto.ImagemUrl);
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="Cliente.Nome" class="form-label"></label>
-            <input asp-for="Cliente.Nome" class="form-control" id="nome" />
-            <span asp-validation-for="Cliente.Nome" class="invalid-feedback d-block"></span>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="Cliente.CPF" class="form-label"></label>
-            <input asp-for="Cliente.CPF" class="form-control" id="cpf" style="max-width:150px;" />
-            <span asp-validation-for="Cliente.CPF" class="invalid-feedback d-block"></span>
-        </div>
-    </div>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="@img"
+                             alt="@item.Produto.Nome"
+                             class="rounded"
+                             style="width:60px;height:60px;object-fit:cover;" />
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="Cliente.Celular" class="form-label"></label>
-            <input asp-for="Cliente.Celular" class="form-control" id="celular" />
-            <span asp-validation-for="Cliente.Celular" class="invalid-feedback d-block"></span>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label asp-for="Cliente.CEP" class="form-label"></label>
-            <input asp-for="Cliente.CEP" class="form-control" id="cep" />
-            <span asp-validation-for="Cliente.CEP" class="invalid-feedback d-block"></span>
-        </div>
-    </div>
+                        <div>
+                            <strong>@item.Produto.Nome</strong> <br />
+                            <small class="text-muted">Quantidade: @item.Quantidade</small>
+                        </div>
+                    </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label asp-for="Cliente.Rua" class="form-label"></label>
-            <input asp-for="Cliente.Rua" class="form-control" id="rua" />
-            <span asp-validation-for="Cliente.Rua" class="invalid-feedback d-block"></span>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label asp-for="Cliente.Numero" class="form-label"></label>
-            <input asp-for="Cliente.Numero" class="form-control" id="numero" />
-            <span asp-validation-for="Cliente.Numero" class="invalid-feedback d-block"></span>
-        </div>
-        
-    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="fw-semibold">
+                            R$ @((item.Produto.Preco * item.Quantidade).ToString("N2"))
+                        </div>
 
-    <div class="mb-3">
-        <label asp-for="Cliente.Complemento" class="form-label"></label>
-        <input asp-for="Cliente.Complemento" class="form-control" />
-        <span asp-validation-for="Cliente.Complemento" class="invalid-feedback d-block"></span>
-    </div>
+                        <!-- Botão remover -->
+                        <button class="btn btn-sm btn-danger remover-item"
+                                data-id="@item.Produto.Id">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </li>
 
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label asp-for="Cliente.Bairro" class="form-label"></label>
-            <input asp-for="Cliente.Bairro" class="form-control" id="bairro" />
-            <span asp-validation-for="Cliente.Bairro" class="invalid-feedback d-block"></span>
-        </div>
-        <div class="col-md-5 mb-3">
-            <label asp-for="Cliente.Cidade" class="form-label"></label>
-            <input asp-for="Cliente.Cidade" class="form-control" id="cidade" />
-            <span asp-validation-for="Cliente.Cidade" class="invalid-feedback d-block"></span>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label asp-for="Cliente.Estado" class="form-label"></label>
-            <select asp-for="Cliente.Estado" class="form-select" id="estado">
-                <option value="">Selecione o Estado</option>
-                <option value="AC">AC</option>
-                <option value="AL">AL</option>
-                <option value="AP">AP</option>
-                <option value="AM">AM</option>
-                <option value="BA">BA</option>
-                <option value="CE">CE</option>
-                <option value="DF">DF</option>
-                <option value="ES">ES</option>
-                <option value="GO">GO</option>
-                <option value="MA">MA</option>
-                <option value="MT">MT</option>
-                <option value="MS">MS</option>
-                <option value="MG">MG</option>
-                <option value="PA">PA</option>
-                <option value="PB">PB</option>
-                <option value="PR">PR</option>
-                <option value="PE">PE</option>
-                <option value="PI">PI</option>
-                <option value="RJ">RJ</option>
-                <option value="RN">RN</option>
-                <option value="RS">RS</option>
-                <option value="RO">RO</option>
-                <option value="RR">RR</option>
-                <option value="SC">SC</option>
-                <option value="SP">SP</option>
-                <option value="SE">SE</option>
-                <option value="TO">TO</option>
-            </select>
-            <span asp-validation-for="Cliente.Estado" class="invalid-feedback d-block"></span>
-        </div>
-    </div>
 
-    <hr />
+            }
 
-    <h4>Resumo do pedido</h4>
-    <ul class="list-group mb-3" id="listaItens">
-        @foreach (var item in Model.Itens)
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-center"
-                data-preco-unitario="@item.Produto.Preco.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">
-
-                <div>
-                    @item.Produto.Nome - <span class="quantidade-texto">@item.Quantidade unidade(s)</span>
-                </div>
-                <div>
-                    <span class="preco-item">R$ @((item.Produto.Preco * item.Quantidade).ToString("N2"))</span>
-                    <button type="button" class="btn btn-sm btn-danger remover-item" data-produto-id="@item.Produto.Id">
-                        <i class="bi bi-trash"></i> Remover
-                    </button>
-                </div>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Total:</strong>
+                <span>R$ @total.ToString("N2")</span>
             </li>
-        }
-        <li class="list-group-item d-flex justify-content-between">
-            <strong>Valor total:</strong>
-            <span id="valorTotal">R$ @total.ToString("N2")</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-            <strong>Frete:</strong>
-            <span id="valorFrete">R$ 0,00</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-            <strong>Total com frete:</strong>
-            <span id="totalComFrete">R$ @total.ToString("N2")</span>
-        </li>
-        <li class="list-group-item">
-            <div class="mb-2">
-                <strong>Método de Pagamento:</strong>
-            </div>
-            <div class="btn-group d-flex gap-2" role="group" aria-label="Método de pagamento">
-                <input type="radio" class="btn-check" name="metodoPagamento" id="pix" value="Pix" required>
-                <label class="btn btn-outline-success btn-sm rounded-pill me-2" for="pix">PIX</label>
+        </ul>
 
-                <input type="radio" class="btn-check" name="metodoPagamento" id="cartao" value="Cartão de Crédito">
-                <label class="btn btn-outline-primary btn-sm rounded-pill" for="cartao">Cartão</label>
-            </div>
-            <span asp-validation-for="metodoPagamento" class="invalid-feedback d-block mt-2"></span>
-        </li>
-    </ul>
-
-    <button type="button" class="btn btn-success" onclick="enviarPedido()"
-    @(Model.Itens.Count == 0 ? "disabled" : "") id="btnEnviar">
-        <i class="fab fa-whatsapp"></i> Enviar via WhatsApp
-    </button>
-</form>
-
+        <div class="text-end">
+            <a asp-controller="Pedidos" asp-action="Finalizar" class="btn btn-success">
+                <i class="bi bi-bag-check"></i> Finalizar Compra
+            </a>
+        </div>
+    }
+</div>
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
     <script>
-        // Variável global para controlar o total do carrinho
-        var totalCarrinho = parseFloat('@total.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)');
+        $(document).on("click", ".remover-item", function () {
+            var produtoId = $(this).data("id");
 
-        document.querySelectorAll('.remover-item').forEach(botao => {
-            botao.addEventListener('click', () => {
-                const produtoId = botao.dataset.produtoId;
-
-                fetch('/Home/RemoverItemCarrinho', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(produtoId)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.sucesso) {
-                            const itemLi = botao.closest('li');
-
-                            // Atualizar quantidade ou remover item visualmente
-                            if (data.novaQuantidade > 0) {
-                                // Atualiza quantidade e valor do item
-                                const quantidadeTexto = itemLi.querySelector('.quantidade-texto');
-                                const precoUnitario = parseFloat(itemLi.dataset.precoUnitario);
-                                const novoPrecoItem = precoUnitario * data.novaQuantidade;
-
-                                quantidadeTexto.textContent = `${data.novaQuantidade} unidade(s)`;
-                                itemLi.querySelector('.preco-item').textContent = "R$ " + novoPrecoItem.toFixed(2).replace('.', ',');
-                            } else {
-                                itemLi.remove();
-                            }
-
-                            // Atualiza total global
-                            totalCarrinho = data.novoTotal;
-
-                            // Atualiza valor total na tela
-                            const totalSpan = document.getElementById('valorTotal');
-                            totalSpan.textContent = "R$ " + data.novoTotal.toFixed(2).replace('.', ',');
-
-                            // Recalcula frete e total com frete
-                            atualizarFreteETotal();
-
-                            // Verifica se carrinho está vazio e desabilita botão
-                            if (data.novoTotal === 0) {
-                                document.getElementById('btnEnviar').disabled = true;
-
-                                // Adiciona mensagem de carrinho vazio se não existir
-                                const listaItens = document.getElementById('listaItens');
-                                const itensRestantes = listaItens.querySelectorAll('li:not([class*="list-group-item d-flex justify-content-between"])');
-
-                                if (itensRestantes.length === 0) {
-                                    const liVazio = document.createElement('li');
-                                    liVazio.className = 'list-group-item text-center text-muted';
-                                    liVazio.textContent = 'Seu carrinho está vazio';
-                                    listaItens.insertBefore(liVazio, listaItens.children[0]);
-                                }
-                            }
-                        } else {
-                            alert("Erro ao remover item: " + (data.mensagem || "Erro desconhecido"));
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro:', error);
-                        alert("Erro ao remover item do carrinho.");
-                    });
-            });
-        });
-
-        $(document).ready(function () {
-            // Máscaras
-            $('#cpf').mask('000.000.000-00');
-            $('#celular').mask('(00) 00000-0000');
-            $('#cep').mask('00000-000');
-
-            // Busca CEP para preencher endereço
-            $('#cep').on('blur', function () {
-                var cep = $(this).val().replace(/\D/g, '');
-                if (cep.length === 8) {
-                    $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function (data) {
-                        if (!data.erro) {
-                            $('#rua').val(data.logradouro);
-                            $('#bairro').val(data.bairro);
-                            $('#cidade').val(data.localidade);
-                            $('#estado').val(data.uf);
-                            atualizarFreteETotal();
-                        } else {
-                            alert('CEP não encontrado.');
-                        }
-                    }).fail(function () {
-                        alert('Erro ao consultar o CEP.');
-                    });
-                }
-            });
-
-            
-
-            // Event listener para mudança de estado
-            $('#estado').on('change', atualizarFreteETotal);
-
-            // Validação customizada para método de pagamento
-            $.validator.addMethod("metodoPagamentoRequired", function (value, element) {
-                return $('input[name="metodoPagamento"]:checked').length > 0;
-            }, "Por favor, selecione um método de pagamento.");
-
-            // Configurar validação do formulário
-            $("#formPedido").validate({
-                rules: {
-                    metodoPagamento: {
-                        metodoPagamentoRequired: true
-                    }
-                },
-                messages: {
-                    metodoPagamento: {
-                        metodoPagamentoRequired: "Selecione um método de pagamento."
-                    }
-                },
-                errorElement: 'span',
-                errorClass: 'invalid-feedback',
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass('is-invalid').removeClass('is-valid');
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).addClass('is-valid').removeClass('is-invalid');
-                },
-                errorPlacement: function (error, element) {
-                    if (element.attr('name') === 'metodoPagamento') {
-                        error.insertAfter(element.closest('.btn-group').next('span.invalid-feedback'));
+            $.ajax({
+                url: '@Url.Action("RemoverItemCarrinho", "Home")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(produtoId),
+                success: function (res) {
+                    if (res.sucesso) {
+                        // Atualiza a página ou remove o item da lista
+                        location.reload();
+                        // ou manipular DOM para atualizar quantidade/total sem reload
                     } else {
-                        error.insertAfter(element);
+                        alert("Produto não encontrado no carrinho.");
                     }
                 }
             });
-
-            // Inicializar frete
-            atualizarFreteETotal();
-
-            // Trigger para ativar estado inicial do complemento
-            $('#temComplemento').trigger('change');
         });
-
-        // Função para validar formulário antes do envio
-        function validarFormulario() {
-            let isValid = true;
-
-          
-
-            // Validar método de pagamento
-            if (!$('input[name="metodoPagamento"]:checked').length) {
-                $('input[name="metodoPagamento"]').closest('.list-group-item').find('span.invalid-feedback').text('Selecione um método de pagamento.').show();
-                isValid = false;
-            } else {
-                $('input[name="metodoPagamento"]').closest('.list-group-item').find('span.invalid-feedback').hide();
-            }
-
-            return isValid && $("#formPedido").valid();
-        }
-
-        function atualizarFreteETotal() {
-            const estado = $('#estado').val();
-            let frete = 0;
-            if (estado === 'RJ') frete = 25.00;
-            else if (estado !== '') frete = 40.00;
-
-            const totalFinal = totalCarrinho + frete;
-
-            $('#valorFrete').text(`R$ ${frete.toFixed(2).replace('.', ',')}`);
-            $('#totalComFrete').text(`R$ ${totalFinal.toFixed(2).replace('.', ',')}`);
-        }
-
-        function enviarPedido() {
-            if (totalCarrinho === 0) {
-                alert("Seu carrinho está vazio. Adicione produtos antes de enviar o pedido.");
-                return;
-            }
-
-            // Usar função de validação personalizada
-            if (!validarFormulario()) {
-                alert("Por favor, corrija os erros do formulário.");
-                return;
-            }
-
-            const nome = $('#nome').val();
-            const cpf = $('#cpf').val();
-            const celular = $('#celular').val();
-            const cep = $('#cep').val();
-            const rua = $('#rua').val();
-            const numero = $('#numero').val();
-
-            // Tratamento correto do complemento
-            let complemento = "Sem complemento";
-            if ($('#temComplemento').is(':checked')) {
-                complemento = $('#complemento').val().trim() || "Sem complemento";
-            }
-
-            const bairro = $('#bairro').val();
-            const cidade = $('#cidade').val();
-            const estado = $('#estado').val();
-            const metodoPagamento = $('input[name="metodoPagamento"]:checked').val();
-
-            let frete = 0;
-            if (estado === "RJ") frete = 25.00;
-            else if (estado !== "") frete = 40.00;
-
-            let totalFinal = totalCarrinho + frete;
-
-            let texto = `*FORMULÁRIO DE ENVIO*\n\n`;
-            texto += `*NOME:* ${nome}\n`;
-            texto += `*CPF:* ${cpf}\n`;
-            texto += `*CELULAR:* ${celular}\n`;
-            texto += `*CEP:* ${cep}\n`;
-            texto += `*ENDEREÇO:* ${rua}, ${numero} - ${bairro} - ${cidade}/${estado}\n`;
-            texto += `*COMPLEMENTO:* ${complemento}\n\n`;
-
-            const itens = document.querySelectorAll('#listaItens li[data-preco-unitario]');
-            itens.forEach(item => {
-                const divTexto = item.querySelector('div'); // o primeiro div contém nome e quantidade
-                const textoBruto = divTexto.childNodes[0].textContent.trim(); // Isso pega só "Nome do Produto"
-                const quantidade = divTexto.querySelector('.quantidade-texto')?.textContent.trim() || '';
-
-                texto += `*PEDIDO:* ${textoBruto} (${quantidade})\n`;
-            });
-
-            texto += `\n*VALOR:* R$ ${totalCarrinho.toFixed(2).replace('.', ',')}\n`;
-            texto += `*FRETE:* R$ ${frete.toFixed(2).replace('.', ',')}\n`;
-            texto += `*TOTAL COM FRETE:* R$ ${totalFinal.toFixed(2).replace('.', ',')}\n`;
-            texto += `*FORMA DE PAGAMENTO:* ${metodoPagamento}\n\n`;
-
-            const numeroWpp = '@ViewBag.WhatsAppNum';
-            const url = "https://wa.me/" + numeroWpp + "?text=" + encodeURIComponent(texto);
-
-            // Antes de enviar, garantir que o complemento seja incluído corretamente no POST
-            if ($('#temComplemento').is(':checked')) {
-                $('#complemento').prop('disabled', false); // Garante que será enviado no POST
-            }
-
-            // Abre o WhatsApp
-            window.open(url, "_blank");
-
-            // Aguarda um pouco e então submete o formulário para finalizar o pedido
-            setTimeout(function () {
-                $("#formPedido").submit();
-            }, 1000);
-        }
     </script>
 }

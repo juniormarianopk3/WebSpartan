@@ -1,45 +1,111 @@
 ﻿@model WebSpartan.Models.ViewModels.ProdutoIndexViewModel
 
-<h2 class="my-4 text-center">Catálogo</h2>
+@{
+    ViewData["Title"] = "Catálogo de Produtos";
+}
+
+<h2 class="my-4 text-center fw-bold">Catálogo de Produtos</h2>
+
+<div class="alert alert-success shadow-sm" role="alert">
+    <h4 class="alert-heading">💡 Aproveite!</h4>
+    <p class="mb-0">
+        Todos os produtos oferecem <strong>CashBack</strong> em suas compras, garantindo descontos nas próximas aquisições.
+        💰 🤑
+    </p>
+</div>
 
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             @foreach (var produto in Model.Produtos)
             {
+                var img = string.IsNullOrWhiteSpace(produto.ImagemUrl)
+                ? Url.Content("~/imagens/no-image.png")
+                : Url.Content(produto.ImagemUrl);
+
                 <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Badge (opcional) -->
-                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Novo</div>
+                    <div class="card h-100 d-flex flex-column position-relative shadow-sm border-0">
 
-                        <!-- Imagem do produto -->
-                        <img class="card-img-top d-block mx-auto"
-                             src="@produto.ImagemUrl"
-                             alt="@produto.Nome"
-                             style="max-width: 250px; max-height: 100px; object-fit: contain;" />
-
-                        <!-- Detalhes -->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <h5 class="fw-bolder">@produto.Nome</h5>
-                                <p>@produto.Descricao</p>
-                                <p class="text-success fw-bold">R$ @produto.Preco.ToString("F2")</p>
-                            </div>
+                        <!-- Badge -->
+                        <div class="badge position-absolute d-flex align-items-center justify-content-center"
+                             style="top: 0.5rem; right: 0.5rem; width: 2rem; height: 2rem; border-radius: 20%;">
+                            <span style="font-size: 1.5rem;">🧃</span>
                         </div>
 
-                        <!-- Ações -->
-                        <form action="/Home/AdicionarAoCarrinho" method="post">
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex flex-column align-items-center">
-                                <input type="hidden" name="produtoId" value="@produto.Id" />
-                                <input type="number" name="quantidade" value="1" min="1" class="form-control mb-2 w-50 text-center" />
-                                <button type="submit" class="btn btn-success d-flex align-items-center gap-1 px-2 py-1 rounded-pill shadow-sm" style="font-size: 0.85rem;">
-                                    <i class="bi bi-cart-plus-fill" style="font-size: 1rem;"></i>
-                                    <span class="fw-semibold">Adicionar ao carrinho</span>
-                                </button>
+                        <!-- Imagem -->
+                        <div class="pt-3 d-flex justify-content-center">
+                            <img class="card-img-top"
+                                 src="@img"
+                                 alt="@produto.Nome"
+                                 style="width: 250px; height: 150px; object-fit: contain;" />
+                        </div>
 
+                        <!-- Detalhes -->
+                        <div class="card-body p-4 text-center d-flex flex-column">
+                            <h5 class="fw-bold text-dark">@produto.Nome</h5>
 
+                            @if (!string.IsNullOrWhiteSpace(produto.Descricao))
+                            {
+                                <p class="mb-2 text-muted small">
+                                    @Html.Raw(@produto.Descricao)
+                                </p>
+                            }
+
+                            <div class="mb-2">
+                                <span class="fw-bold text-success fs-5">
+                                    @produto.Preco.ToString("C")
+                                </span>
                             </div>
-                        </form>
+
+                            @* Badge de cashback *@
+                            @if (produto.CashbackPercentual > 0)
+                            {
+                                <div class="mt-2 d-flex justify-content-center">
+                                    <span class="badge rounded-pill bg-light text-success border border-success fs-9 text-wrap">
+                                        🐖
+                                        Receba @((int)(produto.CashbackPercentual * 100M))% de volta em CashBack
+                                    </span>
+                                </div>
+
+
+                            }
+                        </div>
+
+
+                        <!-- Footer -->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent mt-auto">
+                            <form asp-controller="Home"
+                                  asp-action="AdicionarAoCarrinho"
+                                  method="post"
+                                  class="d-flex flex-column align-items-center">
+
+                                <input type="hidden" name="produtoId" value="@produto.Id" />
+
+                                <input type="number"
+                                       name="quantidade"
+                                       value="1"
+                                       min="1"
+                                       class="form-control mb-2 w-50 text-center" />
+
+                                <div class="d-flex flex-wrap justify-content-center gap-2 w-100">
+                                    <button type="submit"
+                                            class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-1 px-3 py-2 rounded-pill shadow-sm text-nowrap"
+                                            style="font-size: 0.9rem;">
+                                        🛒
+                                        <span class="fw-semibold">Add to Cart</span>
+                                    </button>
+
+                                    <a asp-controller="Home"
+                                       asp-action="Detalhes"
+                                       asp-route-id="@produto.Id"
+                                       class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-1 px-3 py-2 rounded-pill shadow-sm text-nowrap"
+                                       style="font-size: 0.9rem;">
+                                        ℹ️
+                                        <span class="fw-semibold">Ver Detalhes</span>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             }
@@ -48,9 +114,10 @@
 </section>
 
 <div class="text-center mb-4">
-    <a href="@Url.Action("Carrinho", "Home")" class="btn btn-primary position-relative">
-        <i class="bi-cart-fill me-1"></i>
-        Ver Carrinho
+    <a asp-controller="Home" asp-action="Carrinho" class="btn btn-primary position-relative px-4 py-2 rounded-pill shadow-sm">
+        <i class="bi bi-cart-fill me-1"></i>
+        Ir para o Carrinho
+
         @if (Model.TotalItensCarrinho > 0)
         {
             <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
@@ -61,33 +128,39 @@
     </a>
 </div>
 
-
 <!-- Modal de Confirmação -->
 <div class="modal fade" id="modalCarrinho" tabindex="-1" aria-labelledby="modalCarrinhoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content shadow-sm">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalCarrinhoLabel">Produto Adicionado</h5>
+                <h5 class="modal-title" id="modalCarrinhoLabel">🎉 Produto Adicionado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
-                Produto adicionado ao carrinho com sucesso!
+                Seu produto foi adicionado ao carrinho com sucesso!
             </div>
             <div class="modal-footer">
-                <a href="/Home/Carrinho" class="btn btn-success">Ver Carrinho</a>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continuar comprando</button>
+                <a asp-controller="Home" asp-action="Carrinho" class="btn btn-success">Ver Carrinho</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continuar Comprando</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('adicionado') === 'True') {
-            const modal = new bootstrap.Modal(document.getElementById('modalCarrinho'));
-            modal.show();
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    });
-</script>
+@section Scripts {
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('adicionado') === 'True') {
+                const el = document.getElementById('modalCarrinho');
+                if (!el) return;
+
+                const modal = new bootstrap.Modal(el);
+                modal.show();
+
+                // limpa querystring sem recarregar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+}

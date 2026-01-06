@@ -7,5 +7,6 @@ namespace WebSpartan.Models.ViewModels
     {
         public List<Produto> Produtos { get; set; }
         public int TotalItensCarrinho { get; set; }
+        public decimal CashbackPercentual { get; set; }
     }
 }

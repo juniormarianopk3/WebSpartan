@@ -1,0 +1,46 @@
+﻿@model WebSpartan.Models.Produto
+
+@{
+    ViewData["Title"] = "Detalhes do Produto";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="@Model.ImagemUrl"
+                 alt="@Model.Nome"
+                 class="img-fluid rounded shadow"
+                 style="max-height: 400px; object-fit: contain;" />
+        </div>
+        <div class="col-md-6">
+            <h1>@Model.Nome</h1>
+            <h3 class="text-success mb-3">R$ @Model.Preco.ToString("F2")</h3>
+            <div class="mb-4">
+                @Html.Raw(Model.Descricao)
+            </div>
+            <div class="mb-4">
+                @Html.Raw(Model.DescricaoCompleta)
+            </div>
+
+            <form action="/Home/AdicionarAoCarrinho" method="post" class="mt-4">
+                <input type="hidden" name="produtoId" value="@Model.Id" />
+                <div class="mb-3" style="max-width: 120px;">
+                    <label for="quantidade" class="form-label">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" class="form-control text-center" />
+                </div>
+                <button type="submit" class="btn btn-success btn-lg d-flex align-items-center gap-1">
+                    <i class="bi bi-cart-plus-fill"></i> Adicionar ao Carrinho
+                </button>
+            </form>
+
+            <div class="mt-4 d-flex gap-2">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                    Voltar para o Catálogo
+                </a>
+                <a href="@Url.Action("Carrinho", "Home")" class="btn btn-primary position-relative">
+                    <i class="bi bi-cart-fill"></i> Ver Carrinho
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

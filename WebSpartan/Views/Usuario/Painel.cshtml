@@ -1,0 +1,199 @@
+﻿@model WebSpartan.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Meu Painel";
+
+    var enderecos = (ViewBag.Enderecos as List<WebSpartan.Models.UserAddress>) ?? new List<WebSpartan.Models.UserAddress>();
+    var pedidos = (ViewBag.Pedidos as List<WebSpartan.Models.Pedido>) ?? new List<WebSpartan.Models.Pedido>();
+}
+
+<div class="container py-5">
+
+    <!-- Header / Saudação -->
+    <div class="dashboard-header mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <p class="mb-2 subtitle text-uppercase small">
+                    Meu Painel • @DateTime.Now.ToString("dd/MM/yyyy")
+                </p>
+                <h2 class="fw-bold mb-2">
+                    👋 Olá, <span class="text-warning">@Model.NomeCompleto</span>
+                </h2>
+                <p class="subtitle mb-0">
+                    Acompanhe seus <strong>pedidos</strong>, gerencie seus <strong>endereços</strong> e veja seu
+                    <strong>cashback</strong> disponível para as próximas compras.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="badge bg-emerald-500 bg-success-subtle text-success fw-semibold px-3 py-2 rounded-pill">
+                    <i class="bi bi-shield-check me-1"></i> Conta verificada
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards principais -->
+    <div class="row g-4">
+
+        <!-- Saldo de Cashback -->
+        <div class="col-md-4">
+            <div class="card panel-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="icon-circle cashback mb-2">
+                                <i class="bi bi-coin"></i>
+                            </div>
+                            <h6 class="text-muted text-uppercase mb-1 small">Saldo de Cashback</h6>
+                            <div class="cashback-value text-success">
+                                @Model.SaldoCashback.ToString("C")
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Use seu saldo de cashback nas próximas compras elegíveis.
+                    </p>
+                    <a href="/Usuario/Cashback" class="btn btn-outline-success btn-sm rounded-pill">
+                        <i class="bi bi-list-ul me-1"></i> Ver extrato
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endereços -->
+        <div class="col-md-4">
+            <div class="card panel-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="icon-circle address mb-2">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <h6 class="text-muted text-uppercase mb-1 small">Endereços de entrega</h6>
+                            <h5 class="fw-bold mb-0">Meus Endereços</h5>
+                        </div>
+                        <span class="badge bg-light text-muted border">
+                            @enderecos.Count @((enderecos.Count == 1) ? "salvo" : "salvos")
+                        </span>
+                    </div>
+
+                    @if (enderecos.Any())
+                    {
+                        <ul class="list-group list-group-flush mb-3">
+                            @foreach (var e in enderecos.Take(3))
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <div class="fw-semibold">
+                                                @e.Rua, @e.Numero
+                                                @if (e.Principal)
+                                                {
+                                                    <span class="badge bg-success ms-2">Principal</span>
+                                                }
+                                            </div>
+                                            <small class="text-muted">
+                                                @e.Bairro - @e.Cidade/@e.Estado
+                                            </small>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                        @if (enderecos.Count > 3)
+                        {
+                            <p class="text-muted small mb-2">
+                                + @(enderecos.Count - 3) endereço(s) cadastrado(s)…
+                            </p>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state mb-3">
+                            <i class="bi bi-inbox me-1"></i>
+                            Nenhum endereço cadastrado ainda.
+                            <br />
+                            <span class="text-muted small">Cadastre pelo menos um para agilizar seu próximo pedido.</span>
+                        </div>
+                    }
+
+                    <a href="/Usuario/Enderecos" class="btn btn-outline-primary btn-sm rounded-pill">
+                        <i class="bi bi-pencil-square me-1"></i> Gerenciar endereços
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Pedidos -->
+        <div class="col-md-4">
+            <div class="card panel-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="icon-circle orders mb-2">
+                                <i class="bi bi-bag-check"></i>
+                            </div>
+                            <h6 class="text-muted text-uppercase mb-1 small">Histórico recente</h6>
+                            <h5 class="fw-bold mb-0">Últimos Pedidos</h5>
+                        </div>
+                    </div>
+
+                    @if (pedidos.Any())
+                    {
+                        <ul class="list-group list-group-flush mb-3">
+                            @foreach (var p in pedidos)
+                            {
+                                var total = p.Subtotal + p.Frete - p.Desconto;
+                                var statusClass = p.Status switch
+                                {
+                                    "Pago" => "bg-success",
+                                    "Pendente" => "bg-warning text-dark",
+                                    "Aguardando Pagamento" => "bg-secondary",
+                                    "Cancelado" => "bg-danger",
+                                    _ => "bg-light text-dark"
+                                };
+
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Pedido #@p.Id
+                                                <span class="badge badge-status @statusClass ms-2">
+                                                    @p.Status
+                                                </span>
+                                            </div>
+                                            <small class="text-muted">
+                                                @p.Data.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="text-success fw-semibold">
+                                                @total.ToString("C")
+                                            </div>
+                                            <a asp-controller="Pedidos" asp-action="Detalhes" asp-route-id="@p.Id"
+                                               class="small text-decoration-none">
+                                                Ver detalhes
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="empty-state mb-3">
+                            <i class="bi bi-bag-x me-1"></i>
+                            Você ainda não tem pedidos.
+                            <br />
+                            <span class="text-muted small">Que tal começar explorando as ofertas da loja?</span>
+                        </div>
+                    }
+
+                    <a href="/Pedidos/Historico" class="btn btn-outline-secondary btn-sm rounded-pill">
+                        <i class="bi bi-clock-history me-1"></i> Ver todos os pedidos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

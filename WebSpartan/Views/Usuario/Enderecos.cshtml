@@ -1,0 +1,61 @@
+﻿@model IEnumerable<WebSpartan.Models.UserAddress>
+@{
+    ViewData["Title"] = "Meus Endereços";
+}
+
+<div class="container py-4">
+    <h2 class="mb-3 text-center">Meus Endereços</h2>
+
+   
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MsgErro"]
+        </div>
+    }
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Msg"]
+        </div>
+    }
+    <div class="text-end mb-3">
+        <a asp-action="NovoEndereco" class="btn btn-success">+ Novo Endereço</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p>Nenhum endereço cadastrado.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rua</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Principal</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>@e.Rua</td>
+                        <td>@e.Cidade</td>
+                        <td>@e.Estado</td>
+                        <td>@(e.Principal ? "Sim" : "Não")</td>
+                        <td>
+                            <a asp-action="EditarEndereco" asp-route-id="@e.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                            <form asp-action="ExcluirEndereco" asp-route-id="@e.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover este endereço?')">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

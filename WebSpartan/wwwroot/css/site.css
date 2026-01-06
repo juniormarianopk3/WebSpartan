@@ -72,3 +72,100 @@ a.btn.btn-outline-dark {
 .whatsapp-float i {
     font-size: 1.8rem;
 }
+.dashboard-header {
+    background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+    color: #e5e7eb;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+    .dashboard-header::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 999px;
+        background: rgba(239, 68, 68, 0.15);
+        top: -40px;
+        right: -40px;
+        filter: blur(6px);
+    }
+
+    .dashboard-header h2 {
+        letter-spacing: 0.04em;
+    }
+
+    .dashboard-header .subtitle {
+        color: #9ca3af;
+    }
+
+.panel-card {
+    border: none;
+    border-radius: 1.25rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    height: 100%;
+}
+
+    .panel-card .card-header {
+        border: none;
+        background: transparent;
+        padding-bottom: 0;
+    }
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+    .icon-circle.cashback {
+        background: rgba(34, 197, 94, 0.10);
+        color: #22c55e;
+    }
+
+    .icon-circle.address {
+        background: rgba(59, 130, 246, 0.10);
+        color: #3b82f6;
+    }
+
+    .icon-circle.orders {
+        background: rgba(249, 115, 22, 0.10);
+        color: #f97316;
+    }
+
+.cashback-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.list-group-item {
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+    .list-group-item + .list-group-item {
+        border-top: 1px dashed #e5e7eb;
+    }
+
+.badge-status {
+    font-size: 0.75rem;
+}
+
+.empty-state {
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    font-size: 0.9rem;
+}
+
+    .empty-state i {
+        opacity: 0.6;
+    }
+
